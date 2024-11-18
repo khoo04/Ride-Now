@@ -1,0 +1,26 @@
+import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get_it/get_it.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:ride_now_app/core/cubits/app_user/app_user_cubit.dart';
+import 'package:ride_now_app/core/network/connection_checker.dart';
+import 'package:ride_now_app/core/network/network_client.dart';
+import 'package:ride_now_app/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:ride_now_app/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:ride_now_app/features/auth/domain/repositories/auth_repository.dart';
+import 'package:ride_now_app/features/auth/domain/usecases/current_user.dart';
+import 'package:ride_now_app/features/auth/domain/usecases/user_login.dart';
+import 'package:ride_now_app/features/auth/domain/usecases/user_logout.dart';
+import 'package:ride_now_app/features/auth/domain/usecases/user_register.dart';
+import 'package:ride_now_app/features/auth/domain/usecases/user_remember_me_status_checked.dart';
+import 'package:ride_now_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:ride_now_app/features/ride/data/datasources/ride_remote_data_source.dart';
+import 'package:ride_now_app/features/ride/data/repositories/ride_repository_impl.dart';
+import 'package:ride_now_app/features/ride/domain/repositories/ride_repository.dart';
+import 'package:ride_now_app/features/ride/domain/usecases/fetch_available_rides.dart';
+import 'package:ride_now_app/features/ride/domain/usecases/fetch_location_auto_complete_suggestion.dart';
+import 'package:ride_now_app/features/ride/presentation/bloc/ride_main/ride_main_bloc.dart';
+import 'package:ride_now_app/features/ride/presentation/cubit/auto_complete_suggestion_cubit.dart';
+
+part 'init_dependencies_main.dart';
