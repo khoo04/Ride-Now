@@ -2,15 +2,23 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ride_now_app/core/common/widgets/app_button.dart';
-import 'package:ride_now_app/core/common/widgets/navigate_back_button.dart';
+import 'package:ride_now_app/core/theme/app_pallete.dart';
 import 'package:ride_now_app/core/utils/logger.dart';
 import 'package:ride_now_app/core/utils/show_snackbar.dart';
+import 'package:ride_now_app/core/utils/string_extension.dart';
 import 'package:ride_now_app/features/ride/domain/entities/auto_complete_prediction.dart';
+import 'package:ride_now_app/features/ride/domain/entities/place_details.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/fetch_location_auto_complete_suggestion.dart';
+import 'package:ride_now_app/features/ride/domain/usecases/fetch_place_details.dart';
+import 'package:ride_now_app/features/ride/domain/usecases/geocoding_fetch_place_details.dart';
+import 'package:ride_now_app/features/ride/presentation/bloc/ride_create/ride_create_bloc.dart';
+import 'package:ride_now_app/features/ride/presentation/bloc/ride_search/ride_search_bloc.dart';
+import 'package:ride_now_app/features/ride/presentation/cubit/ride_update_cubit.dart';
+import 'package:ride_now_app/features/ride/presentation/pages/search_ride_screen.dart';
 import 'package:ride_now_app/features/ride/presentation/widgets/ride_input_field.dart';
 import 'package:ride_now_app/init_dependencies.dart';
 
@@ -23,6 +31,7 @@ class SearchLocationScreen extends StatefulWidget {
 }
 
 class _SearchLocationScreenState extends State<SearchLocationScreen> {
+  bool isSelectedViaSearch = false;
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
   CameraPosition? initCameraPosition;
@@ -31,7 +40,7 @@ class _SearchLocationScreenState extends State<SearchLocationScreen> {
     const LatLng(0, 0),
   );
   Timer? _debounceTimer;
-  AutoCompletePrediction? userSelectedPlace;
+  PlaceDetails? currentSelectedPlaces;
 
   @override
   void initState() {
@@ -39,7 +48,13 @@ class _SearchLocationScreenState extends State<SearchLocationScreen> {
     _locationFuture = _determinePosition();
   }
 
-  Future<void> _determinePosition() async {
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<Position> getCurrentPosition() async {
     LocationPermission permission;
 
     permission = await Geolocator.checkPermission();
@@ -55,16 +70,26 @@ class _SearchLocationScreenState extends State<SearchLocationScreen> {
           'Location permissions are permanently denied, we cannot request permissions.');
     }
 
-    final initPosition = await Geolocator.getCurrentPosition();
+    final currentPosition = await Geolocator.getCurrentPosition();
 
-    final newPosition = LatLng(initPosition.latitude, initPosition.longitude);
+    return currentPosition;
+  }
 
-    initCameraPosition = CameraPosition(
-      target: newPosition,
-      zoom: 18,
-    );
+  Future<void> _determinePosition() async {
+    try {
+      final currentPosition = await getCurrentPosition();
+      final newPosition =
+          LatLng(currentPosition.latitude, currentPosition.longitude);
 
-    _cameraPositionNotifier.value = newPosition;
+      initCameraPosition = CameraPosition(
+        target: newPosition,
+        zoom: 18,
+      );
+
+      _cameraPositionNotifier.value = newPosition;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<List<AutoCompletePrediction>> _predictionsFromGoogleAPI(
@@ -89,18 +114,33 @@ class _SearchLocationScreenState extends State<SearchLocationScreen> {
 
     _debounceTimer = Timer(const Duration(seconds: 2), () async {
       final predictions = await _predictionsFromGoogleAPI(query);
-      completeCallback(predictions);
+      if (mounted) {
+        completeCallback(predictions);
+      }
+    });
+  }
+
+  Future<PlaceDetails?> _getSelectedPlaceDetailsById(String placeId) async {
+    final fetchPlaceDetails = serviceLocator<FetchPlaceDetails>();
+
+    final res = await fetchPlaceDetails(FetchPlaceDetailsParams(placeId));
+
+    return res.fold((failure) {
+      showSnackBar(context, failure.message);
+      return null;
+    }, (placeDetails) {
+      return placeDetails;
     });
   }
 
   @override
-  void dispose() {
-    _debounceTimer?.cancel();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    //Retrieve Argument From Route
+    final routeArgs =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+    final locationType =
+        routeArgs["locationType"] as String; // Access "location type"
+    final action = routeArgs["action"] as String; // Access "action"
     return SafeArea(
       child: Scaffold(
         body: Stack(
@@ -110,7 +150,10 @@ class _SearchLocationScreenState extends State<SearchLocationScreen> {
               future: _locationFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(
+                      child: CircularProgressIndicator(
+                    color: AppPallete.primaryColor,
+                  ));
                 } else if (snapshot.hasError) {
                   return Center(
                     child: Text(
@@ -121,29 +164,54 @@ class _SearchLocationScreenState extends State<SearchLocationScreen> {
                 }
 
                 // Map rebuilds only when _cameraPositionNotifier changes.
-                return ValueListenableBuilder<LatLng>(
-                  valueListenable: _cameraPositionNotifier,
-                  builder: (context, cameraPosition, _) {
-                    return GoogleMap(
-                      mapType: MapType.normal,
-                      initialCameraPosition: initCameraPosition!,
-                      onMapCreated: (GoogleMapController controller) {
-                        _controller.complete(controller);
-                      },
-                      zoomControlsEnabled: false,
-                      mapToolbarEnabled: false,
-                      myLocationButtonEnabled: false,
-                      onCameraMove: (cameraPosition) {
-                        _cameraPositionNotifier.value = cameraPosition.target;
-                      },
-                      markers: {
-                        Marker(
-                          markerId: const MarkerId("map_center_location"),
-                          position: cameraPosition,
-                        ),
-                      },
-                    );
+                return Listener(
+                  onPointerDown: (e) {
+                    isSelectedViaSearch = false;
                   },
+                  child: ValueListenableBuilder<LatLng>(
+                    valueListenable: _cameraPositionNotifier,
+                    builder: (context, cameraPosition, _) {
+                      return GoogleMap(
+                        mapType: MapType.normal,
+                        initialCameraPosition: initCameraPosition!,
+                        onMapCreated: (GoogleMapController controller) {
+                          _controller.complete(controller);
+                        },
+                        zoomControlsEnabled: false,
+                        mapToolbarEnabled: false,
+                        myLocationButtonEnabled: false,
+                        onCameraMove: (cameraPosition) {
+                          _cameraPositionNotifier.value = cameraPosition.target;
+                        },
+                        onCameraIdle: () async {
+                          if (isSelectedViaSearch) return;
+                          final geocodingFetchPlaceDetails =
+                              serviceLocator<GeocodingFetchPlaceDetails>();
+
+                          final res = await geocodingFetchPlaceDetails(
+                              GeocodingFetchPlaceDetailsParams(
+                                  cameraPosition.latitude,
+                                  cameraPosition.longitude));
+
+                          return res.fold((failure) {
+                            showSnackBar(context, failure.message);
+                            return;
+                          }, (placeDetails) async {
+                            if (!mounted) return;
+                            setState(() {
+                              currentSelectedPlaces = placeDetails;
+                            });
+                          });
+                        },
+                        markers: {
+                          Marker(
+                            markerId: const MarkerId("map_center_location"),
+                            position: cameraPosition,
+                          ),
+                        },
+                      );
+                    },
+                  ),
                 );
               },
             ),
@@ -187,6 +255,18 @@ class _SearchLocationScreenState extends State<SearchLocationScreen> {
                                 onFieldSubmitted();
                               },
                               isDense: true,
+                              suffixIcon: controller.text.isEmpty
+                                  ? null
+                                  : IconButton(
+                                      onPressed: () {
+                                        // Clear the text and reset the controller
+                                        controller.clear();
+                                        // Unfocus the text field
+                                        focusNode.unfocus();
+                                        setState(() {});
+                                      },
+                                      icon: const Icon(Icons.cancel),
+                                    ),
                             ),
                           ),
                         ],
@@ -236,11 +316,29 @@ class _SearchLocationScreenState extends State<SearchLocationScreen> {
                         ),
                       );
                     },
-                    onSelected: (selectedOption) {
-                      vLog(selectedOption.toString());
+                    onSelected: (selectedOption) async {
+                      final selectedPlaceDetails =
+                          await _getSelectedPlaceDetailsById(
+                              selectedOption.placeId!);
+                      if (selectedPlaceDetails == null || !mounted) return;
                       setState(() {
-                        userSelectedPlace = selectedOption;
+                        isSelectedViaSearch = true;
+                        currentSelectedPlaces = selectedPlaceDetails;
                       });
+                      final GoogleMapController controller =
+                          await _controller.future;
+
+                      await controller.animateCamera(
+                        CameraUpdate.newCameraPosition(
+                          CameraPosition(
+                            target: LatLng(
+                              selectedPlaceDetails.latitude,
+                              selectedPlaceDetails.longitude,
+                            ),
+                            zoom: 18,
+                          ),
+                        ),
+                      );
                     },
                     displayStringForOption: (option) =>
                         option.description ?? "Unknown Address",
@@ -250,14 +348,23 @@ class _SearchLocationScreenState extends State<SearchLocationScreen> {
                   alignment: Alignment.centerRight,
                   child: IconButton.outlined(
                     padding: const EdgeInsets.all(8.0),
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.white,
+                    ),
                     onPressed: () async {
-                      vLog("Do something");
-                      return;
-                      await _determinePosition();
+                      final currentPosition = await getCurrentPosition();
                       final GoogleMapController controller =
                           await _controller.future;
                       await controller.animateCamera(
-                        CameraUpdate.newCameraPosition(initCameraPosition!),
+                        CameraUpdate.newCameraPosition(
+                          CameraPosition(
+                            target: LatLng(
+                              currentPosition.latitude,
+                              currentPosition.longitude,
+                            ),
+                            zoom: 18,
+                          ),
+                        ),
                       );
                     },
                     icon: const Icon(Icons.my_location),
@@ -284,27 +391,25 @@ class _SearchLocationScreenState extends State<SearchLocationScreen> {
                   ),
                   child: Column(
                     children: [
-                      const Align(
+                      Align(
                         alignment: Alignment.topLeft,
                         child: Text(
-                          "From",
-                          style: TextStyle(
+                          locationType.capitalize(),
+                          style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
                       ListTile(
-                        leading: Icon(Icons.location_pin),
+                        leading: const Icon(Icons.location_pin),
                         title: Text(
-                          userSelectedPlace?.structuredFormatting?.mainText ??
-                              "Unknown place",
+                          currentSelectedPlaces?.name ?? "Unknown place",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                         subtitle: Text(
-                          userSelectedPlace
-                                  ?.structuredFormatting?.secondaryText ??
+                          currentSelectedPlaces?.formattedAddress ??
                               "Unknown address",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -313,8 +418,69 @@ class _SearchLocationScreenState extends State<SearchLocationScreen> {
                       ),
                       const Spacer(),
                       AppButton(
-                        onPressed: () {},
-                        child: Text("Confirm Location"),
+                        onPressed: currentSelectedPlaces == null
+                            ? null
+                            : () {
+                                if (currentSelectedPlaces == null) {
+                                  showSnackBar(
+                                      context, "Location does not selected");
+                                  return;
+                                }
+                                if (locationType == "from") {
+                                  if (action == "search") {
+                                    context.read<RideSearchBloc>().add(
+                                          UpdateRideSearchOrigin(
+                                            currentSelectedPlaces!,
+                                          ),
+                                        );
+                                    Navigator.of(context).popUntil(
+                                        ModalRoute.withName(
+                                            SearchRideScreen.routeName));
+                                  } else if (action == "create") {
+                                    //Create Action
+                                    context.read<RideCreateBloc>().add(
+                                        UpdateCreateRideParams(
+                                            origin: currentSelectedPlaces));
+                                    Navigator.pop(context);
+                                  } else if (action == "update") {
+                                    //Update Action
+                                    context
+                                        .read<RideUpdateCubit>()
+                                        .onChangeRideDetails(
+                                            origin: currentSelectedPlaces!);
+                                    Navigator.pop(context);
+                                  }
+                                } else if (locationType == "to") {
+                                  if (action == "search") {
+                                    context.read<RideSearchBloc>().add(
+                                          UpdateRideSearchDestination(
+                                            currentSelectedPlaces!,
+                                          ),
+                                        );
+                                    Navigator.of(context).popUntil(
+                                        ModalRoute.withName(
+                                            SearchRideScreen.routeName));
+                                  } else if (action == "create") {
+                                    //Create Action
+                                    context.read<RideCreateBloc>().add(
+                                        UpdateCreateRideParams(
+                                            destination:
+                                                currentSelectedPlaces));
+                                    Navigator.pop(context);
+                                  } else if (action == "update") {
+                                    //Update Action
+                                    context
+                                        .read<RideUpdateCubit>()
+                                        .onChangeRideDetails(
+                                            destination:
+                                                currentSelectedPlaces!);
+                                    Navigator.pop(context);
+                                  }
+                                } else {
+                                  Navigator.of(context).pop();
+                                }
+                              },
+                        child: const Text("Confirm Location"),
                       )
                     ],
                   ),

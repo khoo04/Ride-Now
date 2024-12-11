@@ -13,6 +13,7 @@ class SplashScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Spacer(),
             Image.asset("assets/images/ride_now_logo.png"),
@@ -34,22 +35,19 @@ class SplashScreen extends StatelessWidget {
               },
               child: const Text("Sign Up"),
             ),
-            const SizedBox(
-              height: 20,
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed(LoginScreen.routeName);
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: AppPallete.secondaryColor,
-                minimumSize: Size(MediaQuery.sizeOf(context).width * 0.8, 54),
-                overlayColor: Colors.transparent,
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: TextButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed(LoginScreen.routeName);
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: AppPallete.secondaryColor,
+                  minimumSize: Size(MediaQuery.sizeOf(context).width * 0.8, 54),
+                  overlayColor: Colors.transparent,
+                ),
+                child: const Text("Log In"),
               ),
-              child: const Text("Log In"),
-            ),
-            const SizedBox(
-              height: 20,
             ),
           ],
         ),

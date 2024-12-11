@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:ride_now_app/core/theme/app_pallete.dart';
 
 class RideInputField extends StatelessWidget {
+  final Widget? suffixIcon;
   final String labelText;
   final TextEditingController controller;
   final String? Function(String?)? validator;
   final void Function(String)? onChanged;
+  final void Function()? onTap;
   final String? errorText;
   final TextInputType? keyboardType;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
   final void Function(String)? onFieldSubmitted;
   final bool isDense;
+  final bool readOnly;
   const RideInputField({
     super.key,
     required this.labelText,
@@ -19,14 +22,19 @@ class RideInputField extends StatelessWidget {
     this.onChanged,
     this.errorText,
     this.keyboardType,
-    required this.focusNode,
+    this.focusNode,
     this.onFieldSubmitted,
     this.isDense = false,
+    this.readOnly = false,
+    this.onTap,
+    this.suffixIcon,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      onTap: onTap,
+      readOnly: readOnly,
       onFieldSubmitted: onFieldSubmitted,
       focusNode: focusNode,
       controller: controller,
@@ -44,6 +52,7 @@ class RideInputField extends StatelessWidget {
           borderSide: BorderSide(color: AppPallete.primaryColor),
         ),
         errorText: errorText,
+        suffixIcon: suffixIcon,
       ),
       validator: validator,
       onChanged: onChanged,

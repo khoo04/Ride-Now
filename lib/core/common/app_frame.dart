@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ride_now_app/core/theme/app_pallete.dart';
 import 'package:ride_now_app/features/profile/presentation/pages/profile_screen.dart';
 import 'package:ride_now_app/features/ride/presentation/bloc/ride_main/ride_main_bloc.dart';
+import 'package:ride_now_app/features/ride/presentation/pages/create_ride_screen.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/ride_main_screen.dart';
-import 'package:ride_now_app/features/ride/presentation/pages/search_ride_screen.dart';
+
+import 'package:ride_now_app/features/ride/presentation/pages/your_rides/your_ride_main_screen.dart';
 
 class AppFrame extends StatefulWidget {
   const AppFrame({super.key});
@@ -17,8 +19,8 @@ class _AppFrameState extends State<AppFrame> {
   int currentIndex = 0;
   final List<Widget> pages = const [
     RideMainScreen(),
-    Text("New Ride Page"),
-    Text("Your Rides Page"),
+    CreateRideScreen(),
+    YourRideMainScreen(),
     ProfileScreen(),
   ];
 

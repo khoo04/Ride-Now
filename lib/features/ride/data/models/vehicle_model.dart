@@ -19,8 +19,9 @@ class VehicleModel extends Vehicle {
       vehicleRegistrationNumber: json['vehicle_registration_number'],
       manufacturer: json['manufacturer'],
       model: json['model'],
-      seats: json['seats'],
-      averageFuelConsumption: json['average_fuel_consumptions'],
+      seats: (json['seats'] as num).toInt(),
+      averageFuelConsumption:
+          (json['average_fuel_consumptions'] as num).toDouble(),
       vehicleType: VehicleType
           .values[json['vehicle_type_id'] - 1], // Map nested ID to enum
       userId: json['user_id'],

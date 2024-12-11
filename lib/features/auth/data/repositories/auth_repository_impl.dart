@@ -100,6 +100,10 @@ class AuthRepositoryImpl implements AuthRepository {
     required String confirmPassword,
   }) async {
     try {
+      if (!await (_connectionChecker.isConnected)) {
+        return left(Failure(Constants.noConnectionErrorMessage));
+      }
+
       final res = await _authRemoteDataSource.registerUser(
           name: name,
           phone: phone,

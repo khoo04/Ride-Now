@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ride_now_app/core/common/widgets/app_icon_button.dart';
 import 'package:ride_now_app/core/cubits/app_user/app_user_cubit.dart';
 import 'package:ride_now_app/core/theme/app_pallete.dart';
 import 'package:ride_now_app/core/utils/logger.dart';
+import 'package:ride_now_app/core/utils/show_snackbar.dart';
+import 'package:ride_now_app/features/ride/presentation/bloc/ride/ride_bloc.dart';
 import 'package:ride_now_app/features/ride/presentation/bloc/ride_main/ride_main_bloc.dart';
+import 'package:ride_now_app/features/ride/presentation/pages/ride_detail_screen.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/search_ride_screen.dart';
 import 'package:ride_now_app/features/ride/presentation/widgets/ride_preview_card.dart';
 
@@ -16,6 +20,7 @@ class RideMainScreen extends StatefulWidget {
 
 class _RideMainScreenState extends State<RideMainScreen> {
   final scrollController = ScrollController();
+  bool _isNavigating = false;
   @override
   void initState() {
     super.initState();
@@ -115,44 +120,144 @@ class _RideMainScreenState extends State<RideMainScreen> {
               ),
               const SizedBox(height: 16),
               Expanded(
-                child: BlocConsumer<RideMainBloc, FetchRideState>(
+                child: RefreshIndicator(
+                  color: AppPallete.primaryColor,
+                  onRefresh: () async {
+                    context.read<RideMainBloc>().add(InitFetchRide());
+                  },
+                  child: BlocConsumer<RideMainBloc, FetchRideState>(
                     builder: (context, state) {
-                  if (state is FetchRideSuccess) {
-                    return RefreshIndicator(
-                      color: AppPallete.primaryColor,
-                      onRefresh: () async {
-                        context.read<RideMainBloc>().add(InitFetchRide());
-                      },
-                      child: ListView.separated(
-                        key: const PageStorageKey("rides_scroll_position"),
-                        controller: scrollController,
-                        itemBuilder: (context, index) {
-                          if (index < state.rides.length) {
-                            return RidePreviewCard(ride: state.rides[index]);
-                          } else {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 32),
-                              child: Center(
-                                child: state.isEnd
-                                    ? const Text("No more rides to load")
-                                    : const CircularProgressIndicator(
-                                        color: AppPallete.primaryColor,
+                      if (state is FetchRideSuccess) {
+                        return state.rides.isEmpty
+                            ? Center(
+                                child: Column(
+                                  children: [
+                                    const Spacer(),
+                                    const Text(
+                                      "No rides available",
+                                      style: TextStyle(
+                                        fontSize: 16,
                                       ),
-                              ),
+                                    ),
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                    AppIconButton(
+                                      onPressed: () {
+                                        context
+                                            .read<RideMainBloc>()
+                                            .add(InitFetchRide());
+                                      },
+                                      icon: Icons.refresh,
+                                      label: "Try again",
+                                    ),
+                                    const Spacer(),
+                                  ],
+                                ),
+                              )
+                            : ListView.separated(
+                              physics:
+                                  const AlwaysScrollableScrollPhysics(),
+                              key: const PageStorageKey(
+                                  "rides_scroll_position"),
+                              controller: scrollController,
+                              itemBuilder: (context, index) {
+                                if (index < state.rides.length) {
+                                  final ride = state.rides[index];
+                                  return RidePreviewCard(
+                                    ride: ride,
+                                    onTap: () {
+                                      if (!_isNavigating) {
+                                        _isNavigating = true;
+                            
+                                        context.read<RideBloc>().add(
+                                              SelectRideEvent(
+                                                ride: ride,
+                                              ),
+                                            );
+                                        Navigator.of(context)
+                                            .pushNamed(
+                                                RideDetailScreen.routeName)
+                                            .then((_) {
+                                          _isNavigating = false;
+                                        });
+                                      }
+                                    },
+                                  );
+                                } else if (state.rides.length < 5) {
+                                  return const SizedBox.shrink();
+                                } else {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 32),
+                                    child: Center(
+                                      child: state.isEnd
+                                          ? const Text(
+                                              "No more rides to load")
+                                          : const CircularProgressIndicator(
+                                              color:
+                                                  AppPallete.primaryColor,
+                                            ),
+                                    ),
+                                  );
+                                }
+                              },
+                              separatorBuilder: (context, index) {
+                                return const SizedBox(height: 8);
+                              },
+                              itemCount: state.rides.length + 1,
                             );
-                          }
-                        },
-                        separatorBuilder: (context, index) {
-                          return const SizedBox(height: 8);
-                        },
-                        itemCount: state.rides.length + 1,
-                      ),
-                    );
-                  }
-                  return const Center(child: CircularProgressIndicator());
-                }, listener: (context, state) {
-                  //TODO: Show Snackbar
-                }),
+                      } else if (state is FetchRideFailure) {
+                        return Center(
+                          child: Column(
+                            children: [
+                              const Spacer(),
+                              const Text(
+                                "Error in loading rides",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 4,
+                              ),
+                              Text(
+                                "Error: ${state.message}",
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              AppIconButton(
+                                onPressed: () {
+                                  context
+                                      .read<RideMainBloc>()
+                                      .add(InitFetchRide());
+                                },
+                                icon: Icons.refresh,
+                                label: "Try again",
+                              ),
+                              const Spacer(),
+                            ],
+                          ),
+                        );
+                      }
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: AppPallete.primaryColor,
+                        ),
+                      );
+                    },
+                    listener: (context, state) {
+                      if (state is FetchRideFailure) {
+                        showSnackBar(context, state.message);
+                      }
+                    },
+                  ),
+                ),
               ),
             ],
           ),

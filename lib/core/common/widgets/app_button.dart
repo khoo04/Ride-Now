@@ -8,14 +8,16 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        minimumSize: Size(MediaQuery.sizeOf(context).width * 0.8, 54),
-        foregroundColor: AppPallete.whiteColor,
-        backgroundColor: AppPallete.primaryColor,
+    return Center(
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          fixedSize: Size(MediaQuery.sizeOf(context).width * 0.8, 54),
+          foregroundColor: AppPallete.whiteColor,
+          backgroundColor: AppPallete.primaryColor,
+        ),
+        child: child,
       ),
-      child: child,
     );
   }
 }

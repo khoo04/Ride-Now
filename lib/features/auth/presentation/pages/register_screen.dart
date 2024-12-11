@@ -4,7 +4,6 @@ import 'package:ride_now_app/core/common/widgets/app_button.dart';
 import 'package:ride_now_app/core/common/widgets/my_app_bar.dart';
 import 'package:ride_now_app/core/common/widgets/navigate_back_button.dart';
 import 'package:ride_now_app/core/utils/format_phone_number.dart';
-import 'package:ride_now_app/core/utils/logger.dart';
 import 'package:ride_now_app/core/utils/show_snackbar.dart';
 import 'package:ride_now_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:ride_now_app/features/auth/presentation/widgets/auth_input_field.dart';

@@ -6,10 +6,9 @@ Future<void> initDependencies() async {
   _initUtils();
   _initAuth();
   _initRide();
+  _initProfile();
 
   serviceLocator.registerLazySingleton(() => AppUserCubit());
-  serviceLocator.registerLazySingleton(() => AutoCompleteSuggestionCubit(
-      serviceLocator<FetchLocationAutoCompleteSuggestion>()));
 }
 
 void _initUtils() {
@@ -135,10 +134,130 @@ void _initRide() {
         serviceLocator<RideRepository>(),
       ),
     )
+    ..registerFactory(
+      () => FetchPlaceDetails(
+        serviceLocator<RideRepository>(),
+      ),
+    )
+    ..registerFactory(
+      () => GeocodingFetchPlaceDetails(
+        serviceLocator<RideRepository>(),
+      ),
+    )
+    ..registerFactory(
+      () => SearchAvailableRides(
+        serviceLocator<RideRepository>(),
+      ),
+    )
+    ..registerFactory(
+      () => FetchRideById(
+        serviceLocator<RideRepository>(),
+      ),
+    )
+    ..registerFactory(
+      () => GetRideCostSuggestion(
+        serviceLocator<RideRepository>(),
+      ),
+    )
+    ..registerFactory(
+      () => CreateRide(
+        serviceLocator<RideRepository>(),
+      ),
+    )
+    ..registerFactory(
+      () => UpdateRide(
+        serviceLocator<RideRepository>(),
+      ),
+    )
+    ..registerFactory(
+      () => GetUserCreatedRides(
+        serviceLocator<RideRepository>(),
+      ),
+    )
+    ..registerFactory(
+      () => GetUserJoinedRides(
+        serviceLocator<RideRepository>(),
+      ),
+    )
     //Bloc
     ..registerLazySingleton(
       () => RideMainBloc(
         fetchAvailableRides: serviceLocator<FetchAvailableRides>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => RideSearchBloc(
+        searchAvailableRides: serviceLocator<SearchAvailableRides>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => RideBloc(
+        fetchRideById: serviceLocator<FetchRideById>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => RideCreateBloc(
+        getUserVehicles: serviceLocator<GetUserVehicles>(),
+        getRideCostSuggestion: serviceLocator<GetRideCostSuggestion>(),
+        createRide: serviceLocator<CreateRide>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => RideUpdateCubit(
+        getUserVehicles: serviceLocator<GetUserVehicles>(),
+        updateRide: serviceLocator<UpdateRide>(),
+        getRideCostSuggestion: serviceLocator<GetRideCostSuggestion>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => RideListCubit(
+        getUserCreatedRides: serviceLocator<GetUserCreatedRides>(),
+        getUserJoinedRides: serviceLocator<GetUserJoinedRides>(),
+      ),
+    );
+}
+
+void _initProfile() {
+  serviceLocator
+    ..registerFactory<ProfileRemoteDataSource>(
+      () => ProfileRemoteDataSourceImpl(
+        serviceLocator<NetworkClient>(),
+        serviceLocator<FlutterSecureStorage>(),
+      ),
+    )
+    ..registerFactory<ProfileRepository>(
+      () => ProfileRepositoryImpl(
+        serviceLocator<ProfileRemoteDataSource>(),
+        serviceLocator<ConnectionChecker>(),
+      ),
+    )
+    //Use Case
+    ..registerFactory(
+      () => GetUserVehicles(
+        serviceLocator<ProfileRepository>(),
+      ),
+    )
+    ..registerFactory(
+      () => CreateVehicle(
+        serviceLocator<ProfileRepository>(),
+      ),
+    )
+    ..registerFactory(
+      () => UpdateVehicle(
+        serviceLocator<ProfileRepository>(),
+      ),
+    )
+    ..registerFactory(
+      () => DeleteVehicle(
+        serviceLocator<ProfileRepository>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => VehicleBloc(
+        getUserVehicles: serviceLocator<GetUserVehicles>(),
+        createVehicle: serviceLocator<CreateVehicle>(),
+        updateVehicle: serviceLocator<UpdateVehicle>(),
+        deleteVehicle: serviceLocator<DeleteVehicle>(),
       ),
     );
 }

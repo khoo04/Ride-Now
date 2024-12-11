@@ -9,6 +9,15 @@ String formatPhoneNumber(String phoneNumber) {
 
     // Format and return the phone number
     return '$countryCode $part1-$part2 $part3';
+  } else if (phoneNumber.startsWith('+60') && phoneNumber.length == 13) {
+    // Extract parts of the phone number using substring
+    String countryCode = phoneNumber.substring(0, 3); // "+60"
+    String part1 = phoneNumber.substring(3, 5); // "12"
+    String part2 = phoneNumber.substring(5, 9); // "3457"
+    String part3 = phoneNumber.substring(9); // "6766"
+
+    // Format and return the phone number
+    return '$countryCode $part1-$part2 $part3';
   } else {
     // Return the original phone number if format doesn't match
     return phoneNumber;

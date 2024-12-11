@@ -1,10 +1,11 @@
 import 'package:ride_now_app/core/common/entities/user.dart';
+import 'package:ride_now_app/features/ride/domain/entities/place_details.dart';
 import 'package:ride_now_app/features/ride/domain/entities/vehicle.dart';
 
 class Ride {
   final int rideId;
-  final String originAddress;
-  final String destinationAddress;
+  final PlaceDetails origin;
+  final PlaceDetails destination;
   final DateTime departureTime;
   final String status;
   final double baseCost;
@@ -14,8 +15,8 @@ class Ride {
 
   Ride({
     required this.rideId,
-    required this.originAddress,
-    required this.destinationAddress,
+    required this.origin,
+    required this.destination,
     required this.departureTime,
     required this.status,
     required this.baseCost,

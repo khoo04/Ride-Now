@@ -24,7 +24,7 @@ class AppWrapper extends StatelessWidget {
       },
       child: BlocSelector<AppUserCubit, AppUserState, User?>(selector: (state) {
         if (state is AppUserLoggedIn) {
-          vLog(state.user);
+   
           return state.user;
         }
         return null;

@@ -6,16 +6,15 @@ import 'package:ride_now_app/features/ride/domain/entities/ride.dart';
 
 class RidePreviewCard extends StatelessWidget {
   final Ride ride;
-  const RidePreviewCard({super.key, required this.ride});
+  final void Function()? onTap;
+  const RidePreviewCard({super.key, required this.ride, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        print('Ride ID ${ride.rideId}');
-      },
+      onTap: onTap,
       child: Container(
-        height: 170,
+        height: 240,
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
@@ -96,6 +95,7 @@ class RidePreviewCard extends StatelessWidget {
                                     size: 8.0,
                                   ),
                                 ),
+                                const SizedBox(height: 20),
                               ],
                             ),
                             const SizedBox(width: 8),
@@ -104,19 +104,35 @@ class RidePreviewCard extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    ride.originAddress,
+                                    ride.origin.name,
                                     style: const TextStyle(
                                         fontWeight: FontWeight.bold),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  _buildRideSeats(ride.passengers.length,
-                                      ride.vehicle.seats),
+                                  Text(
+                                    ride.origin.formattedAddress,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 12,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                   const Spacer(),
                                   Text(
-                                    ride.destinationAddress,
+                                    ride.destination.name,
                                     style: const TextStyle(
                                         fontWeight: FontWeight.bold),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    ride.destination.formattedAddress,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 12,
+                                    ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -126,19 +142,11 @@ class RidePreviewCard extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 8.0),
-                      Text(
-                        "RM ${ride.baseCost.toStringAsFixed(2)}",
-                        style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue),
-                      ),
                     ],
                   ),
                 ),
-                const SizedBox(
-                  height: 12,
+                const Divider(
+                  height: 20,
                 ),
                 Row(
                   children: [
@@ -155,6 +163,22 @@ class RidePreviewCard extends StatelessWidget {
                     ),
                   ],
                 ),
+                const Divider(
+                  height: 20,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildRideSeats(ride.passengers.length, ride.vehicle.seats),
+                    Text(
+                      "RM ${ride.baseCost.toStringAsFixed(2)}",
+                      style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -168,7 +192,7 @@ class RidePreviewCard extends StatelessWidget {
       children: List.generate(vehicleSeats, (index) {
         return Icon(
           Icons.airline_seat_recline_normal_outlined,
-          size: 16,
+          size: 22,
           color: index < numOfPassengers
               ? AppPallete.primaryColor // Occupied seats in primary color
               : Colors.grey, // Remaining seats in grey

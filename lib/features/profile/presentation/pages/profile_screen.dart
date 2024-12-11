@@ -4,6 +4,9 @@ import 'package:ride_now_app/core/cubits/app_user/app_user_cubit.dart';
 import 'package:ride_now_app/core/theme/app_pallete.dart';
 import 'package:ride_now_app/core/utils/format_phone_number.dart';
 import 'package:ride_now_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:ride_now_app/features/profile/presentation/pages/manage_vehicles_screen.dart';
+import 'package:ride_now_app/features/profile/presentation/pages/my_voucher_screen.dart';
+import 'package:ride_now_app/features/profile/presentation/pages/update_profile_screen.dart';
 import 'package:ride_now_app/features/profile/presentation/widgets/profile_action_tile.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -29,10 +32,15 @@ class ProfileScreen extends StatelessWidget {
                     height: 20,
                   ),
                   //TODO: User Profile Picture
+                  // const CircleAvatar(
+                  //   radius: 45,
+                  //   backgroundImage:
+                  //       AssetImage("assets/images/profile_placeholder.png"),
+                  // ),
                   const CircleAvatar(
                     radius: 45,
-                    backgroundImage:
-                        AssetImage("assets/images/profile_placeholder.png"),
+                    backgroundImage: NetworkImage(
+                        "https://t3.ftcdn.net/jpg/02/43/12/34/360_F_243123463_zTooub557xEWABDLk0jJklDyLSGl2jrr.jpg"),
                   ),
                   const SizedBox(
                     height: 20,
@@ -54,38 +62,48 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(
                     height: 24,
                   ),
-                  ProfileActionTile(
-                    icon: Icons.person,
-                    onTap: () {},
-                    title: "My Profile",
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 25),
+                    child: ProfileActionTile(
+                      icon: Icons.person,
+                      onTap: () {
+                        Navigator.of(context)
+                            .pushNamed(UpdateProfileScreen.routeName);
+                      },
+                      title: "My Profile",
+                    ),
                   ),
-                  const SizedBox(
-                    height: 25,
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 25),
+                    child: ProfileActionTile(
+                      icon: Icons.redeem,
+                      onTap: () {
+                        Navigator.of(context)
+                            .pushNamed(MyVoucherScreen.routeName);
+                      },
+                      title: "My Voucher",
+                    ),
                   ),
-                  ProfileActionTile(
-                    icon: Icons.redeem,
-                    onTap: () {},
-                    title: "My Voucher",
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 25),
+                    child: ProfileActionTile(
+                      icon: Icons.directions_car,
+                      onTap: () {
+                        Navigator.of(context)
+                            .pushNamed(ManageVehiclesScreen.routeName);
+                      },
+                      title: "Manage Vehicles",
+                    ),
                   ),
-                  const SizedBox(
-                    height: 25,
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 25),
+                    child: ProfileActionTile(
+                      icon: Icons.settings,
+                      onTap: () {},
+                      title: "Settings",
+                    ),
                   ),
-                  ProfileActionTile(
-                    icon: Icons.directions_car,
-                    onTap: () {},
-                    title: "Manage Vehicles",
-                  ),
-                  const SizedBox(
-                    height: 25,
-                  ),
-                  ProfileActionTile(
-                    icon: Icons.settings,
-                    onTap: () {},
-                    title: "Settings",
-                  ),
-                  const SizedBox(
-                    height: 25,
-                  ),
+
                   const Spacer(flex: 2),
                 ],
               );
