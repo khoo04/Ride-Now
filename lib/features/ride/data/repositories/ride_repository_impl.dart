@@ -225,4 +225,18 @@ class RideRepositoryImpl implements RideRepository {
       return left(Failure(e.message));
     }
   }
+
+  @override
+  Future<Either<Failure, Ride>> cancelRide({required int rideId}) async {
+    try {
+      if (!await (_connectionChecker.isConnected)) {
+        return left(Failure(Constants.noConnectionErrorMessage));
+      }
+      final ride = await _rideRemoteDataSource.cancelRide(rideId: rideId);
+
+      return right(ride);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
 }

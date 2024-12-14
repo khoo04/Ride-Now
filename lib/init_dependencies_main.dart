@@ -179,6 +179,11 @@ void _initRide() {
         serviceLocator<RideRepository>(),
       ),
     )
+    ..registerFactory(
+      () => CancelRide(
+        serviceLocator<RideRepository>(),
+      ),
+    )
     //Bloc
     ..registerLazySingleton(
       () => RideMainBloc(
@@ -193,6 +198,7 @@ void _initRide() {
     ..registerLazySingleton(
       () => RideBloc(
         fetchRideById: serviceLocator<FetchRideById>(),
+        cancelRide: serviceLocator<CancelRide>(),
       ),
     )
     ..registerLazySingleton(

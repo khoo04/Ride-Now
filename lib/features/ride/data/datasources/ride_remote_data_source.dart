@@ -50,6 +50,8 @@ abstract interface class RideRemoteDataSource {
 
   Future<RideModel> fetchRideById({required int rideId});
 
+  Future<RideModel> cancelRide({required int rideId});
+
   ///External API Call (Google Maps / Open Street Maps)
   Future<List<AutoCompletePredictionModel>?> locationAutoCompleteSuggestion(
       {required String query});
@@ -489,6 +491,34 @@ class RideRemoteDataSourceImpl implements RideRemoteDataSource {
         return (appResponse.data as List)
             .map((data) => RideModel.fromJson(data))
             .toList();
+      } else {
+        throw ServerException(appResponse.message);
+      }
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout) {
+        throw const ServerException(Constants.connectionTimeout);
+      }
+      throw ServerException(e.message!);
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<RideModel> cancelRide({required int rideId}) async {
+    final token = await _flutterSecureStorage.read(key: "access_token");
+
+    try {
+      final response = await _networkClient.invoke(
+        "${ApiRoutes.ride}/$rideId",
+        RequestType.delete,
+        headers: {"Authorization": "Bearer $token"},
+      );
+
+      final appResponse = AppResponse.fromJson(response.data);
+
+      if (response.statusCode == 200) {
+        return RideModel.fromJson(appResponse.data);
       } else {
         throw ServerException(appResponse.message);
       }

@@ -14,6 +14,11 @@ class FetchRideDetails extends RideEvent {
   FetchRideDetails({required this.rideId});
 }
 
+class CancelRideEvent extends RideEvent {
+  final int rideId;
+  CancelRideEvent({required this.rideId});
+}
+
 class GetUserCreatedNJoinedRides extends RideEvent {}
 
 class ResetRideStateEvent extends RideEvent {}

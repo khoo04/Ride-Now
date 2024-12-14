@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ride_now_app/core/usecase/usecase.dart';
 import 'package:ride_now_app/features/profile/domain/entities/voucher.dart';
 import 'package:ride_now_app/features/ride/domain/entities/ride.dart';
+import 'package:ride_now_app/features/ride/domain/usecases/cancel_ride.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/fetch_ride_by_id.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/get_user_created_rides.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/get_user_joined_rides.dart';
@@ -13,13 +14,17 @@ part 'ride_state.dart';
 class RideBloc extends Bloc<RideEvent, RideState> {
   //Use Cases
   final FetchRideById _fetchRideById;
+  final CancelRide _cancelRide;
 
   RideBloc({
     required FetchRideById fetchRideById,
+    required CancelRide cancelRide,
   })  : _fetchRideById = fetchRideById,
+        _cancelRide = cancelRide,
         super(const RideInitial()) {
     on<SelectRideEvent>(_onSelectRide);
     on<FetchRideDetails>(_onFetchRideById);
+    on<CancelRideEvent>(_onCancelRide);
     on<ResetRideStateEvent>(_onResetRideBloc);
   }
 
@@ -43,6 +48,25 @@ class RideBloc extends Bloc<RideEvent, RideState> {
     ride.fold((failure) {
       emit(RideFailure(failure.message));
     }, (ride) {
+      emit(currentState.copyWith(ride: ride));
+    });
+  }
+
+  Future<void> _onCancelRide(
+      CancelRideEvent event, Emitter<RideState> emit) async {
+    final currentState = state as RideSelected;
+
+    emit(RideLoading());
+
+    final ride = await _cancelRide(
+      CancelRideParams(rideId: event.rideId),
+    );
+
+    ride.fold((failure) {
+      emit(RideFailure(failure.message));
+      emit(currentState);
+    }, (ride) {
+      emit(const RideActionSuccess("Ride canceled successfully"));
       emit(currentState.copyWith(ride: ride));
     });
   }

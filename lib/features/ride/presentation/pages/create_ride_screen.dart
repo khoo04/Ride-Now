@@ -47,7 +47,6 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
     fromLocationController.dispose();
     toLocationController.dispose();
     baseCostController.dispose();
-    _rideCreateBloc.add(InitializeCreateRideEvent());
     super.dispose();
   }
 
@@ -104,6 +103,9 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
               if (state is RideCreateInitial) {
                 errors = state.validationErrors;
                 userVehicles = state.vehicles;
+                dateTimeController.text = state.departureDateTime != null
+                    ? "${formatDate(state.departureDateTime!)} ${formatTime(state.departureDateTime!)}"
+                    : '';
                 fromLocationController.text = state.fromPlace?.name ?? '';
                 toLocationController.text = state.toPlace?.name ?? '';
                 baseCostController.text =

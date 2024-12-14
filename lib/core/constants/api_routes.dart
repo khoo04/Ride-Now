@@ -1,6 +1,9 @@
 class ApiRoutes {
   //static const baseUrl = "http://10.0.2.2:8000/api/RideNowV1";
   static const baseUrl = "http://192.168.51.11:8000/api/RideNowV1";
+
+  //Stagging
+  //static const baseUrl = "https://staging.khoodev.us.kg/api/RideNowV1";
   //Auth Route
   static const login = "$baseUrl/auth/login";
   static const register = "$baseUrl/auth/register";

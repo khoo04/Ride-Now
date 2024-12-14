@@ -41,6 +41,8 @@ abstract interface class RideRepository {
 
   Future<Either<Failure, List<Ride>>> getJoinedRides();
 
+  Future<Either<Failure, Ride>> cancelRide({required int rideId});
+
   ///External API Call (Google Maps / Open Street Maps)
   Future<Either<Failure, List<AutoCompletePrediction>?>>
       fetchLocationAutoCompleteSuggestion({required String query});

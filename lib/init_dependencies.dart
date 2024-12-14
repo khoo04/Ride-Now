@@ -26,6 +26,7 @@ import 'package:ride_now_app/features/profile/presentation/bloc/vehicle/vehicle_
 import 'package:ride_now_app/features/ride/data/datasources/ride_remote_data_source.dart';
 import 'package:ride_now_app/features/ride/data/repositories/ride_repository_impl.dart';
 import 'package:ride_now_app/features/ride/domain/repositories/ride_repository.dart';
+import 'package:ride_now_app/features/ride/domain/usecases/cancel_ride.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/create_ride.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/fetch_available_rides.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/fetch_location_auto_complete_suggestion.dart';

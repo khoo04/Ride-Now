@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ride_now_app/core/common/entities/user.dart';
 import 'package:ride_now_app/core/common/widgets/app_button.dart';
 import 'package:ride_now_app/core/common/widgets/cancel_button.dart';
+import 'package:ride_now_app/core/common/widgets/custom_sweet_alert_dialog.dart';
 import 'package:ride_now_app/core/common/widgets/my_app_bar.dart';
 import 'package:ride_now_app/core/common/widgets/navigate_back_button.dart';
 import 'package:ride_now_app/core/cubits/app_user/app_user_cubit.dart';
@@ -16,6 +17,7 @@ import 'package:ride_now_app/core/utils/open_contact_dialog.dart';
 import 'package:ride_now_app/core/utils/show_snackbar.dart';
 import 'package:ride_now_app/core/utils/string_extension.dart';
 import 'package:ride_now_app/features/ride/presentation/bloc/ride/ride_bloc.dart';
+import 'package:ride_now_app/features/ride/presentation/bloc/ride_main/ride_main_bloc.dart';
 import 'package:ride_now_app/features/ride/presentation/cubit/ride_update_cubit.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/update_ride_screen.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/in_app_navigation_screen.dart';
@@ -49,7 +51,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
             onPressed: () {
               Navigator.of(context).popUntil((route) {
                 context.read<RideBloc>().add(ResetRideStateEvent());
-                return true;
+                return route.isFirst;
               });
             },
           ),
@@ -58,12 +60,19 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
           listener: (context, state) {
             if (state is RideFailure) {
               showSnackBar(context, state.message);
-            } else if (state is! RideSelected) {
-              Navigator.of(context).pop();
+            } else if (state is RideActionSuccess) {
+              showSnackBar(context, state.message);
+              context.read<RideMainBloc>().add(InitFetchRide());
             }
           },
           builder: (context, state) {
-            if (state is! RideSelected) {
+            if (state is RideLoading || state is RideActionSuccess) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: AppPallete.primaryColor,
+                ),
+              );
+            } else if (state is! RideSelected) {
               return const SizedBox.shrink();
             }
             return BlocSelector<AppUserCubit, AppUserState, User?>(
@@ -352,8 +361,52 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                     ),
                     Expanded(
                       child: CancelButton(
-                          onPressed: () {
+                          onPressed: () async {
                             //Cancel Ride
+                            final value =
+                                await CustomSweetAlertDialog.show<bool>(
+                              context,
+                              title: const Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.warning_amber_rounded,
+                                    color: Colors.orange,
+                                    size: 50,
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    'Cancel Ride?',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                              content: const Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Are you sure you want to cancel this ride?',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  Text(
+                                    'This action cannot be undone.',
+                                    textAlign: TextAlign.center,
+                                    style:
+                                        TextStyle(color: AppPallete.errorColor),
+                                  ),
+                                ],
+                              ),
+                              confirmValue: true,
+                              cancelValue: false,
+                            );
+
+                            if (value) {
+                              _rideBloc.add(
+                                  CancelRideEvent(rideId: state.ride.rideId));
+                            }
                           },
                           child: const Text("Cancel Ride")),
                     ),
@@ -533,7 +586,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                 children: [
                   Text(
                     state.ride.driver.name,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),

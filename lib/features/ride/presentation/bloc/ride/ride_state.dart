@@ -38,6 +38,11 @@ class RideSelected extends RideState {
 
 class RideLoading extends RideState {}
 
+class RideActionSuccess extends RideState {
+  final String message;
+  const RideActionSuccess(this.message);
+}
+
 class RideFailure extends RideState {
   final String message;
   const RideFailure(this.message);
