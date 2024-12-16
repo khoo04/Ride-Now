@@ -19,6 +19,11 @@ class CancelRideEvent extends RideEvent {
   CancelRideEvent({required this.rideId});
 }
 
+class SelectVoucherOnRide extends RideEvent {
+  final Voucher voucher;
+  SelectVoucherOnRide({required this.voucher});
+}
+
 class GetUserCreatedNJoinedRides extends RideEvent {}
 
 class ResetRideStateEvent extends RideEvent {}

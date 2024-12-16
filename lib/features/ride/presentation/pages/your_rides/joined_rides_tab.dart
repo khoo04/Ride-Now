@@ -74,7 +74,7 @@ class _JoinedRidesTabState extends State<JoinedRidesTab>
           indicatorColor: AppPallete.secondaryColor,
         ),
         Expanded(
-          child: BlocConsumer<RideListCubit, RideListState>(
+          child: BlocConsumer<YourRideListCubit, RideListState>(
             listener: (context, state) {
               if (state is RideListFailure) {
                 showSnackBar(context, state.message);
@@ -96,7 +96,7 @@ class _JoinedRidesTabState extends State<JoinedRidesTab>
                   .where((ride) => ride.status == "confirmed")
                   .toList();
               final completedRides = joinRides
-                  .where((ride) => ride.status == "completed ")
+                  .where((ride) => ride.status == "completed")
                   .toList();
               final canceledRides =
                   joinRides.where((ride) => ride.status == 'canceled').toList();

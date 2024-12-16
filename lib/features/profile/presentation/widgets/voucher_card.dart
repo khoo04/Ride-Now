@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:ride_now_app/core/theme/app_pallete.dart';
 import 'package:ride_now_app/core/utils/format_date.dart';
+import 'package:ride_now_app/features/profile/domain/entities/voucher.dart';
 
 class VoucherCard extends StatelessWidget {
-  const VoucherCard({super.key});
+  final Voucher voucher;
+  const VoucherCard({super.key, required this.voucher});
 
   @override
   Widget build(BuildContext context) {
@@ -30,15 +32,15 @@ class VoucherCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 20),
                 child: Text(
-                  "RM Amount",
-                  style: TextStyle(
+                  "RM ${voucher.amount}",
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
               Text(
-                "Voucher ID: ABC12345677",
+                "Voucher ID: ${voucher.voucherId}",
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w300,
@@ -49,7 +51,7 @@ class VoucherCard extends StatelessWidget {
                 height: 6,
               ),
               Text(
-                "Received on: Created At ${formatDate(DateTime.now())}",
+                "Received on: ${formatDate(voucher.createdAt)}",
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w300,

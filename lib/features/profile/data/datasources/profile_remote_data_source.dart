@@ -5,6 +5,8 @@ import 'package:ride_now_app/core/constants/constants.dart';
 import 'package:ride_now_app/core/error/exception.dart';
 import 'package:ride_now_app/core/network/app_response.dart';
 import 'package:ride_now_app/core/network/network_client.dart';
+import 'package:ride_now_app/features/profile/data/models/voucher_model.dart';
+import 'package:ride_now_app/features/profile/domain/entities/voucher.dart';
 import 'package:ride_now_app/features/ride/data/models/vehicle_model.dart';
 
 abstract interface class ProfileRemoteDataSource {
@@ -29,6 +31,8 @@ abstract interface class ProfileRemoteDataSource {
   });
 
   Future<bool> deleteVehicle({required int vehicleId});
+
+  Future<List<VoucherModel>> getUserVouchers();
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
@@ -168,6 +172,36 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
         return appResponse.success;
       } else {
         throw const ServerException("Unable to delete vehicle");
+      }
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout) {
+        throw const ServerException(Constants.connectionTimeout);
+      }
+      throw ServerException(e.message!);
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<List<VoucherModel>> getUserVouchers() async {
+    final token = await _flutterSecureStorage.read(key: "access_token");
+
+    try {
+      final response = await _networkClient.invoke(
+        ApiRoutes.vouchers,
+        RequestType.get,
+        headers: {"Authorization": "Bearer $token"},
+      );
+
+      final appResponse = AppResponse.fromJson(response.data);
+
+      if (response.statusCode == 200) {
+        return (appResponse.data as List)
+            .map((e) => VoucherModel.fromJson(e))
+            .toList();
+      } else {
+        throw ServerException(appResponse.message);
       }
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout) {

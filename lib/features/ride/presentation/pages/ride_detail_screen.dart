@@ -10,15 +10,19 @@ import 'package:ride_now_app/core/common/widgets/my_app_bar.dart';
 import 'package:ride_now_app/core/common/widgets/navigate_back_button.dart';
 import 'package:ride_now_app/core/cubits/app_user/app_user_cubit.dart';
 import 'package:ride_now_app/core/theme/app_pallete.dart';
+import 'package:ride_now_app/core/utils/calculate_ride_price.dart';
 import 'package:ride_now_app/core/utils/format_date.dart';
 import 'package:ride_now_app/core/utils/format_time.dart';
 import 'package:ride_now_app/core/utils/logger.dart';
 import 'package:ride_now_app/core/utils/open_contact_dialog.dart';
+import 'package:ride_now_app/core/utils/round_cost.dart';
 import 'package:ride_now_app/core/utils/show_snackbar.dart';
 import 'package:ride_now_app/core/utils/string_extension.dart';
+import 'package:ride_now_app/features/payment/presentation/pages/payment_web_screen.dart';
+import 'package:ride_now_app/features/ride/domain/entities/ride.dart';
 import 'package:ride_now_app/features/ride/presentation/bloc/ride/ride_bloc.dart';
-import 'package:ride_now_app/features/ride/presentation/bloc/ride_main/ride_main_bloc.dart';
 import 'package:ride_now_app/features/ride/presentation/cubit/ride_update_cubit.dart';
+import 'package:ride_now_app/features/ride/presentation/pages/pick_voucher_screen.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/update_ride_screen.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/in_app_navigation_screen.dart';
 
@@ -62,7 +66,6 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
               showSnackBar(context, state.message);
             } else if (state is RideActionSuccess) {
               showSnackBar(context, state.message);
-              context.read<RideMainBloc>().add(InitFetchRide());
             }
           },
           builder: (context, state) {
@@ -446,25 +449,20 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                "Total price for ${state.seats} passenger",
-                style: const TextStyle(
+              const Text(
+                "Base cost for 1 passenger",
+                style: TextStyle(
                   fontSize: 16,
                   color: AppPallete.hintColor,
                 ),
               ),
-              //TODO Calculate based on passengers
-              Column(
-                children: [
-                  Text(
-                    "RM ${_calculateTotalPrice(state.ride.baseCost, state.seats, 0.8).toStringAsFixed(2)}",
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: AppPallete.primaryColor,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+              Text(
+                "RM ${state.ride.baseCost}",
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: AppPallete.primaryColor,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),
@@ -673,45 +671,53 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
             fontWeight: FontWeight.w400,
           ),
         ),
+        const Spacer(),
         const Padding(
           padding: EdgeInsets.symmetric(vertical: 8.0),
           child: Divider(),
         ),
-        const Spacer(),
-        const Text(
-          "Note: \nYou will get cashback voucher after this ride completed, if you become the first person who join the ride ",
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: AppPallete.errorColor,
-          ),
-        ),
-        const SizedBox(
-          height: 8,
-        ),
-        InkWell(
-          onTap: () {},
-          child: const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.redeem,
-                  color: AppPallete.primaryColor,
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  "Apply Voucher",
-                  style: TextStyle(color: AppPallete.primaryColor),
-                ),
-                Spacer(),
-                Icon(Icons.chevron_right),
-              ],
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text.rich(
+              TextSpan(
+                children: [
+                  const TextSpan(
+                    text: "Total price for ",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
+                  TextSpan(
+                    text: "${state.seats} ",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.red, // Highlighted in red
+                    ),
+                  ),
+                  TextSpan(
+                    text: state.seats > 1 ? "passengers" : "passenger",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
+            Text(
+              "RM ${calculateRidePrice(baseCost: state.ride.baseCost, currentPassengersCount: state.ride.passengers.length, requiredSeats: state.seats).toStringAsFixed(2)}",
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppPallete.primaryColor,
+              ),
+            ),
+          ],
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 24.0),
@@ -742,14 +748,296 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                 return AppButton(
                   onPressed: () {
                     //Join ride
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Container(
+                            height: 350,
+                            width: MediaQuery.of(context).size.width,
+                            margin: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Pricing Details',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 18,
+                                    color: AppPallete.primaryColor,
+                                  ),
+                                ),
+                                const Divider(),
+                                Expanded(
+                                  child: _renderPricingDetails(state),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: Column(
+                                    children: [
+                                      InkWell(
+                                        onTap: () {
+                                          Navigator.of(context).pushNamed(
+                                              PickVoucherScreen.routeName);
+                                        },
+                                        child: const Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 8.0),
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.redeem,
+                                                color: AppPallete.primaryColor,
+                                              ),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                "Apply Voucher",
+                                                style: TextStyle(
+                                                    color: AppPallete
+                                                        .primaryColor),
+                                              ),
+                                              Spacer(),
+                                              Icon(Icons.chevron_right),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 8,
+                                      ),
+                                      Center(
+                                        child: AppButton(
+                                            onPressed: () {
+                                              Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          PaymentWebScreen()));
+                                            },
+                                            child: const Text("Join ride")),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          );
+                        });
                   },
-                  child: const Text("Join ride"),
+                  child: const Text("View pricing details"),
                 );
               }
             }),
           ),
         ),
       ],
+    );
+  }
+
+  SizedBox _renderPricingDetails(RideSelected state) {
+    return SizedBox(
+      child: SingleChildScrollView(
+        child: BlocBuilder<RideBloc, RideState>(
+          builder: (context, state) {
+            if (state is! RideSelected) {
+              return const SizedBox.shrink();
+            }
+            final int requiredSeats = state.seats;
+
+            bool isFirstPerson = state.ride.passengers.isEmpty;
+            bool firstPersonRequiresMultipleSeats =
+                isFirstPerson && requiredSeats >= 2;
+
+            final double baseCost = state.ride.baseCost;
+            final double discountedCost =
+                roundToNearestFiveCents(baseCost * 0.8);
+
+            double subtotal;
+            double? voucherAmount;
+            if (!isFirstPerson) {
+              subtotal = discountedCost * requiredSeats;
+            } else {
+              subtotal = baseCost + discountedCost * (requiredSeats - 1);
+            }
+
+            if (state.voucherSelected != null) {
+              subtotal = (subtotal - state.voucherSelected!.amount)
+                  .clamp(0, double.infinity);
+              voucherAmount = state.voucherSelected!.amount;
+            }
+
+            final double platformCharge =
+                roundToNearestFiveCents(subtotal * 0.05);
+
+            const double bankServiceCharge = 0.70;
+
+            return Column(
+              children: [
+                if (isFirstPerson)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "First passenger cost",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        "RM ${roundToNearestFiveCents(state.ride.baseCost)}",
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                if (!isFirstPerson || firstPersonRequiresMultipleSeats)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Next passengers cost (20% discount) x ${firstPersonRequiresMultipleSeats ? (requiredSeats - 1) : requiredSeats}",
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        "RM ${(discountedCost * (firstPersonRequiresMultipleSeats ? (requiredSeats - 1) : requiredSeats)).toStringAsFixed(2)}",
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                if (state.voucherSelected != null)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Applied Voucher Amount",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.red,
+                        ),
+                      ),
+                      Text(
+                        "- RM${state.voucherSelected!.amount.toStringAsFixed(2)}",
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                const Divider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Subtotal",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      "RM ${subtotal.toStringAsFixed(2)}",
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                const Divider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Platform charges (5%)",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Text(
+                      "RM ${platformCharge.toStringAsFixed(2)}",
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Bank service charge",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Text(
+                      "RM ${bankServiceCharge.toStringAsFixed(2)}",
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                const Divider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Total cost",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      "RM ${calculateRidePrice(
+                        baseCost: state.ride.baseCost,
+                        currentPassengersCount: state.ride.passengers.length,
+                        requiredSeats: state.seats,
+                        voucherAmount: voucherAmount,
+                      ).toStringAsFixed(2)}",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                if (isFirstPerson)
+                  const Text(
+                    "Note: \nYou are the first person who join this ride, you will get cashback voucher after this ride completed.",
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: AppPallete.errorColor,
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -765,21 +1053,5 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
         );
       }),
     );
-  }
-
-  //TODO Calculate Price Based On Num Of Passengers
-  double _calculateTotalPrice(
-      double basePrice, int numOfPassengers, double discountFactor) {
-    List<double> prices = [];
-
-    for (int passenger = 1; passenger <= numOfPassengers; passenger++) {
-      double price = basePrice * pow(discountFactor, passenger - 1);
-      prices.add(price);
-    }
-
-    // Sum all prices
-    double totalPrice = prices.fold(0, (sum, price) => sum + price);
-
-    return totalPrice;
   }
 }

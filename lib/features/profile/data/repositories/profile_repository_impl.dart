@@ -5,6 +5,7 @@ import 'package:ride_now_app/core/error/failure.dart';
 import 'package:ride_now_app/core/network/connection_checker.dart';
 import 'package:ride_now_app/core/utils/logger.dart';
 import 'package:ride_now_app/features/profile/data/datasources/profile_remote_data_source.dart';
+import 'package:ride_now_app/features/profile/domain/entities/voucher.dart';
 import 'package:ride_now_app/features/profile/domain/repositories/profile_repository.dart';
 import 'package:ride_now_app/features/ride/domain/entities/vehicle.dart';
 
@@ -99,6 +100,20 @@ class ProfileRepositoryImpl implements ProfileRepository {
         vehicleId: vehicleId,
       );
       return right(vehicle);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Voucher>>> getUserVouchers() async {
+    try {
+      if (!await (_connectionChecker.isConnected)) {
+        return left(Failure(Constants.noConnectionErrorMessage));
+      }
+      final vouchers = await _profileRemoteDataSource.getUserVouchers();
+
+      return right(vouchers);
     } on ServerException catch (e) {
       return left(Failure(e.message));
     }

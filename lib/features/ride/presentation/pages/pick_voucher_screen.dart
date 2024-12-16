@@ -4,18 +4,20 @@ import 'package:ride_now_app/core/common/widgets/my_app_bar.dart';
 import 'package:ride_now_app/core/common/widgets/navigate_back_button.dart';
 import 'package:ride_now_app/core/theme/app_pallete.dart';
 import 'package:ride_now_app/core/utils/show_snackbar.dart';
+import 'package:ride_now_app/features/profile/domain/entities/voucher.dart';
 import 'package:ride_now_app/features/profile/presentation/bloc/voucher/voucher_bloc.dart';
 import 'package:ride_now_app/features/profile/presentation/widgets/voucher_card.dart';
+import 'package:ride_now_app/features/ride/presentation/bloc/ride/ride_bloc.dart';
 
-class MyVoucherScreen extends StatefulWidget {
-  static const routeName = '/my-voucher';
-  const MyVoucherScreen({super.key});
+class PickVoucherScreen extends StatefulWidget {
+  static const routeName = '/pick-voucher';
+  const PickVoucherScreen({super.key});
 
   @override
-  State<MyVoucherScreen> createState() => _MyVoucherScreenState();
+  State<PickVoucherScreen> createState() => _PickVoucherScreenState();
 }
 
-class _MyVoucherScreenState extends State<MyVoucherScreen> {
+class _PickVoucherScreenState extends State<PickVoucherScreen> {
   @override
   void initState() {
     super.initState();
@@ -32,7 +34,7 @@ class _MyVoucherScreenState extends State<MyVoucherScreen> {
           }),
           enabledBackground: true,
           title: const Text(
-            "My Voucher",
+            "Choose your vouchers",
             style: TextStyle(fontWeight: FontWeight.w500),
           ),
         ),
@@ -69,18 +71,16 @@ class _MyVoucherScreenState extends State<MyVoucherScreen> {
                           // Padding for the first element
                           return Padding(
                             padding: const EdgeInsets.only(top: 20),
-                            child: VoucherCard(
-                              voucher: voucher,
-                            ),
+                            child: _voucherCardWithOnTap(voucher),
                           );
                         } else if (index == indexOfLastItem) {
                           // Padding for the last element
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 20),
-                            child: VoucherCard(voucher: voucher),
+                            child: _voucherCardWithOnTap(voucher),
                           );
                         }
-                        return VoucherCard(voucher: voucher);
+                        return _voucherCardWithOnTap(voucher);
                       },
                       separatorBuilder: (context, index) {
                         return const SizedBox(
@@ -92,6 +92,18 @@ class _MyVoucherScreenState extends State<MyVoucherScreen> {
             },
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _voucherCardWithOnTap(Voucher voucher) {
+    return GestureDetector(
+      onTap: () {
+        context.read<RideBloc>().add(SelectVoucherOnRide(voucher: voucher));
+        Navigator.of(context).pop();
+      },
+      child: VoucherCard(
+        voucher: voucher,
       ),
     );
   }

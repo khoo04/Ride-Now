@@ -199,6 +199,8 @@ void _initRide() {
       () => RideBloc(
         fetchRideById: serviceLocator<FetchRideById>(),
         cancelRide: serviceLocator<CancelRide>(),
+        rideMainBloc: serviceLocator<RideMainBloc>(),
+        yourRideListCubit: serviceLocator<YourRideListCubit>(),
       ),
     )
     ..registerLazySingleton(
@@ -216,7 +218,7 @@ void _initRide() {
       ),
     )
     ..registerLazySingleton(
-      () => RideListCubit(
+      () => YourRideListCubit(
         getUserCreatedRides: serviceLocator<GetUserCreatedRides>(),
         getUserJoinedRides: serviceLocator<GetUserJoinedRides>(),
       ),
@@ -256,6 +258,16 @@ void _initProfile() {
     ..registerFactory(
       () => DeleteVehicle(
         serviceLocator<ProfileRepository>(),
+      ),
+    )
+    ..registerFactory(
+      () => GetUserVouchers(
+        serviceLocator<ProfileRepository>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => VoucherBloc(
+        getUserVouchers: serviceLocator<GetUserVouchers>(),
       ),
     )
     ..registerLazySingleton(

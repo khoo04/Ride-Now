@@ -7,10 +7,10 @@ import 'package:ride_now_app/features/ride/domain/usecases/get_user_joined_rides
 
 part 'your_ride_list_state.dart';
 
-class RideListCubit extends Cubit<RideListState> {
+class YourRideListCubit extends Cubit<RideListState> {
   final GetUserCreatedRides _getUserCreatedRides;
   final GetUserJoinedRides _getUserJoinedRides;
-  RideListCubit({
+  YourRideListCubit({
     required GetUserCreatedRides getUserCreatedRides,
     required GetUserJoinedRides getUserJoinedRides,
   })  : _getUserJoinedRides = getUserJoinedRides,
@@ -36,5 +36,26 @@ class RideListCubit extends Cubit<RideListState> {
         );
       });
     });
+  }
+
+  void updateRideInList(Ride updatedRide) {
+    if (state is RidesDisplaySuccess) {
+      final currentState = state as RidesDisplaySuccess;
+
+      final updatedJoinedRides = currentState.joinedRides.map((ride) {
+        return ride.rideId == updatedRide.rideId ? updatedRide : ride;
+      }).toList();
+
+      final updatedCreatedRides = currentState.createdRides.map((ride) {
+        return ride.rideId == updatedRide.rideId ? updatedRide : ride;
+      }).toList();
+
+      emit(
+        RidesDisplaySuccess(
+          joinedRides: updatedJoinedRides,
+          createdRides: updatedCreatedRides,
+        ),
+      );
+    }
   }
 }

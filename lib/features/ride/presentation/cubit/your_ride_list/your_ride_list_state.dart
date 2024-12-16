@@ -17,6 +17,16 @@ final class RidesDisplaySuccess extends RideListState {
     required this.joinedRides,
     required this.createdRides,
   });
+
+  RidesDisplaySuccess copyWith({
+    List<Ride>? joinedRides,
+    List<Ride>? createdRides,
+  }) {
+    return RidesDisplaySuccess(
+      joinedRides: joinedRides ?? this.joinedRides,
+      createdRides: createdRides ?? this.createdRides,
+    );
+  }
 }
 
 class RideListFailure extends RideListState {

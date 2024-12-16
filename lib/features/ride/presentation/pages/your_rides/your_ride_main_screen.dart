@@ -17,7 +17,7 @@ class _YourRideMainScreenState extends State<YourRideMainScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<RideListCubit>().getUserCreatedNJoinedRides();
+    context.read<YourRideListCubit>().getUserCreatedNJoinedRides();
   }
 
   @override
@@ -45,7 +45,7 @@ class _YourRideMainScreenState extends State<YourRideMainScreen> {
           ),
           body: TabBarView(
             children: [
-              BlocBuilder<RideListCubit, RideListState>(
+              BlocBuilder<YourRideListCubit, RideListState>(
                 builder: (context, state) {
                   if (state is RideListLoading) {
                     return const Center(
@@ -57,7 +57,7 @@ class _YourRideMainScreenState extends State<YourRideMainScreen> {
                   return const JoinedRidesTab();
                 },
               ),
-              BlocBuilder<RideListCubit, RideListState>(
+              BlocBuilder<YourRideListCubit, RideListState>(
                 builder: (context, state) {
                   if (state is RideListLoading) {
                     return const Center(

@@ -146,9 +146,8 @@ class SearchRideResultScreen extends StatelessWidget {
                       onTap: () {
                         if (!isNavigating) {
                           isNavigating = true;
-                          context
-                              .read<RideBloc>()
-                              .add(SelectRideEvent(ride: ride));
+                          context.read<RideBloc>().add(
+                              SelectRideEvent(ride: ride, seats: state.seats));
                           Navigator.of(context)
                               .pushNamed(RideDetailScreen.routeName)
                               .then((_) {

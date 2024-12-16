@@ -1,6 +1,6 @@
 class ApiRoutes {
   //static const baseUrl = "http://10.0.2.2:8000/api/RideNowV1";
-  static const baseUrl = "http://192.168.51.11:8000/api/RideNowV1";
+  static const baseUrl = "http://192.168.182.11:8000/api/RideNowV1";
 
   //Stagging
   //static const baseUrl = "https://staging.khoodev.us.kg/api/RideNowV1";
@@ -69,6 +69,13 @@ class ApiRoutes {
   ///
   ///Get All Joined Rides
   static const joinedRides = "$baseUrl/ride/joinedRides";
+
+  ///User Route
+  static const profile = "$baseUrl/users";
+
+  ///Route to get users vouchers
+  /// Method: GET
+  static const vouchers = "$profile/vouchers";
 
   static const autoCompleteApiRoute =
       "https://maps.googleapis.com/maps/api/place/autocomplete/json";

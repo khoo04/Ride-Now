@@ -1,5 +1,5 @@
 class Voucher {
-  final int voucherId;
+  final String voucherId;
   final double amount;
   final bool redeemed;
   final DateTime createdAt;

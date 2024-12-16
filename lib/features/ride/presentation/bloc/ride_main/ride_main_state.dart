@@ -19,6 +19,18 @@ final class FetchRideSuccess extends FetchRideState {
     required this.isEnd,
     required this.currentPage,
   });
+
+  FetchRideSuccess copyWith({
+    List<Ride>? rides,
+    bool? isEnd,
+    int? currentPage,
+  }) {
+    return FetchRideSuccess(
+      rides: rides ?? this.rides,
+      isEnd: isEnd ?? this.isEnd,
+      currentPage: currentPage ?? this.currentPage,
+    );
+  }
 }
 
 final class FetchRideFailure extends FetchRideState {

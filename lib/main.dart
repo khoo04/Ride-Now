@@ -9,6 +9,7 @@ import 'package:ride_now_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:ride_now_app/features/auth/presentation/pages/login_screen.dart';
 import 'package:ride_now_app/features/auth/presentation/pages/register_screen.dart';
 import 'package:ride_now_app/features/profile/presentation/bloc/vehicle/vehicle_bloc.dart';
+import 'package:ride_now_app/features/profile/presentation/bloc/voucher/voucher_bloc.dart';
 import 'package:ride_now_app/features/profile/presentation/pages/manage_vehicles_screen.dart';
 import 'package:ride_now_app/features/profile/presentation/pages/my_voucher_screen.dart';
 import 'package:ride_now_app/features/profile/presentation/pages/register_vehicle_screen.dart';
@@ -22,6 +23,7 @@ import 'package:ride_now_app/features/ride/presentation/bloc/ride_search/ride_se
 import 'package:ride_now_app/features/ride/presentation/cubit/ride_update_cubit.dart';
 import 'package:ride_now_app/features/ride/presentation/cubit/your_ride_list/your_ride_list_cubit.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/create_ride_success_screen.dart';
+import 'package:ride_now_app/features/ride/presentation/pages/pick_voucher_screen.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/update_ride_screen.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/in_app_navigation_screen.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/ride_detail_screen.dart';
@@ -46,6 +48,9 @@ void main() async {
       create: (_) => serviceLocator<AppUserCubit>(),
     ),
     BlocProvider(
+      create: (_) => serviceLocator<VoucherBloc>(),
+    ),
+    BlocProvider(
       create: (_) => serviceLocator<VehicleBloc>(),
     ),
     BlocProvider(
@@ -64,7 +69,7 @@ void main() async {
       create: (_) => serviceLocator<RideUpdateCubit>(),
     ),
     BlocProvider(
-      create: (_) => serviceLocator<RideListCubit>(),
+      create: (_) => serviceLocator<YourRideListCubit>(),
     ),
   ], child: const MyApp()));
 }
@@ -125,6 +130,7 @@ class _MyAppState extends State<MyApp> {
         UpdateRideScreen.routeName: (context) => const UpdateRideScreen(),
         UpdateRideSuccessScreen.routeName: (context) =>
             const UpdateRideSuccessScreen(),
+        PickVoucherScreen.routeName: (context) => const PickVoucherScreen(),
       },
     );
   }

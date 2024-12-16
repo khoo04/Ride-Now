@@ -13,7 +13,7 @@ class VoucherModel extends Voucher {
       voucherId: json["voucher_id"],
       amount: json["amount"],
       redeemed: json["redeemed"],
-      createdAt: json["created_at"],
+      createdAt: DateTime.parse(json["created_at"]),
     );
   }
 

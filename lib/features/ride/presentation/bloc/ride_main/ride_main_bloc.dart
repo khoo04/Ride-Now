@@ -16,6 +16,8 @@ class RideMainBloc extends Bloc<RideMainEvent, FetchRideState> {
     on<RideMainEvent>((event, emit) {});
     on<InitFetchRide>(_onInitRide);
     on<RetrieveAvailabeRides>(_onFetchAvailableRides);
+    on<UpdateSpecificRideInList>(_onUpdateSpecificRide);
+    on<RemoveSpecificRideInList>(_onRemoveSpecificRide);
   }
 
   _onInitRide(InitFetchRide event, Emitter<FetchRideState> emit) async {
@@ -54,5 +56,32 @@ class RideMainBloc extends Bloc<RideMainEvent, FetchRideState> {
       emit(FetchRideSuccess(
           rides: combinedRides, isEnd: isEnd, currentPage: currentPage + 1));
     });
+  }
+
+  _onUpdateSpecificRide(
+      UpdateSpecificRideInList event, Emitter<FetchRideState> emit) {
+    if (state is FetchRideSuccess) {
+      final currentState = state as FetchRideSuccess;
+
+      final updatedRides = currentState.rides.map((ride) {
+        return ride.rideId == event.ride.rideId ? event.ride : ride;
+      }).toList();
+
+      emit(currentState.copyWith(rides: updatedRides));
+    }
+  }
+
+  _onRemoveSpecificRide(
+      RemoveSpecificRideInList event, Emitter<FetchRideState> emit) {
+    if (state is FetchRideSuccess) {
+      final currentState = state as FetchRideSuccess;
+
+      // Remove the canceled ride
+      final updatedRides = currentState.rides
+          .where((ride) => ride.rideId != event.ride.rideId)
+          .toList();
+
+      emit(currentState.copyWith(rides: updatedRides));
+    }
   }
 }

@@ -79,7 +79,7 @@ class _CreatedRidesTabState extends State<CreatedRidesTab>
           indicatorColor: AppPallete.secondaryColor,
         ),
         Expanded(
-          child: BlocConsumer<RideListCubit, RideListState>(
+          child: BlocConsumer<YourRideListCubit, RideListState>(
             listener: (context, state) {
               if (state is RideListFailure) {
                 showSnackBar(context, state.message);
@@ -101,11 +101,12 @@ class _CreatedRidesTabState extends State<CreatedRidesTab>
                   .where((ride) => ride.status == "confirmed")
                   .toList();
               final completedRides = createdRides
-                  .where((ride) => ride.status == "completed ")
+                  .where((ride) => ride.status == "completed")
                   .toList();
               final canceledRides = createdRides
                   .where((ride) => ride.status == 'canceled')
                   .toList();
+              vLog(completedRides);
               return TabBarView(
                 controller: _tabController,
                 children: <Widget>[
