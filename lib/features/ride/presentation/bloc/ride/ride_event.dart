@@ -27,3 +27,9 @@ class SelectVoucherOnRide extends RideEvent {
 class GetUserCreatedNJoinedRides extends RideEvent {}
 
 class ResetRideStateEvent extends RideEvent {}
+
+//For real-time update
+class UpdateSelectedRide extends RideEvent {
+  final Ride updatedRide;
+  UpdateSelectedRide(this.updatedRide);
+}

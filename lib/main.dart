@@ -8,6 +8,8 @@ import 'package:ride_now_app/core/theme/theme.dart';
 import 'package:ride_now_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:ride_now_app/features/auth/presentation/pages/login_screen.dart';
 import 'package:ride_now_app/features/auth/presentation/pages/register_screen.dart';
+import 'package:ride_now_app/features/payment/presentation/pages/payment_failed_screen.dart';
+import 'package:ride_now_app/features/payment/presentation/pages/payment_success_screen.dart';
 import 'package:ride_now_app/features/profile/presentation/bloc/vehicle/vehicle_bloc.dart';
 import 'package:ride_now_app/features/profile/presentation/bloc/voucher/voucher_bloc.dart';
 import 'package:ride_now_app/features/profile/presentation/pages/manage_vehicles_screen.dart';
@@ -20,7 +22,7 @@ import 'package:ride_now_app/features/ride/presentation/bloc/ride/ride_bloc.dart
 import 'package:ride_now_app/features/ride/presentation/bloc/ride_create/ride_create_bloc.dart';
 import 'package:ride_now_app/features/ride/presentation/bloc/ride_main/ride_main_bloc.dart';
 import 'package:ride_now_app/features/ride/presentation/bloc/ride_search/ride_search_bloc.dart';
-import 'package:ride_now_app/features/ride/presentation/cubit/ride_update_cubit.dart';
+import 'package:ride_now_app/features/ride/presentation/cubit/ride_update/ride_update_cubit.dart';
 import 'package:ride_now_app/features/ride/presentation/cubit/your_ride_list/your_ride_list_cubit.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/create_ride_success_screen.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/pick_voucher_screen.dart';
@@ -131,6 +133,9 @@ class _MyAppState extends State<MyApp> {
         UpdateRideSuccessScreen.routeName: (context) =>
             const UpdateRideSuccessScreen(),
         PickVoucherScreen.routeName: (context) => const PickVoucherScreen(),
+        //Payment
+        PaymentFailedScreen.routeName: (context) => const PaymentFailedScreen(),
+        PaymentSuccessScreen.routeName : (context) => const PaymentSuccessScreen(),
       },
     );
   }

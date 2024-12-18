@@ -23,6 +23,10 @@ abstract interface class AuthRemoteDataSource {
   });
   Future<UserModel> getUserDataByToken();
   Future<AppResponse> logout();
+
+  //Get Broadcasting Auth Token
+  Future<String> getBroadcastingAuthToken(
+      {required String channelName, required String socketId});
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -160,6 +164,37 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw ServerException(e.message!);
     } on ServerException catch (e) {
       throw ServerException(e.message);
+    }
+  }
+
+  @override
+  Future<String> getBroadcastingAuthToken(
+      {required String channelName, required String socketId}) async {
+    final token = await _flutterSecureStorage.read(key: "access_token");
+
+    try {
+      final response = await _networkClient.invoke(
+        ApiRoutes.broadcastingAuthEndpoints,
+        RequestType.post,
+        headers: {"Authorization": "Bearer $token"},
+        requestBody: {
+          "channel_name": channelName,
+          "socket_id": socketId,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return (response.data['auth'] as String);
+      } else {
+        throw const ServerException("Authentication failed");
+      }
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout) {
+        throw const ServerException(Constants.connectionTimeout);
+      }
+      throw ServerException(e.message!);
+    } catch (e) {
+      throw ServerException(e.toString());
     }
   }
 }

@@ -53,6 +53,7 @@ dependencies:
   url_launcher: ^6.3.1
   flutter_polyline_points: ^2.1.0
   webview_flutter: ^4.10.0
+  pusher_channels_flutter: ^2.4.0
 
 dev_dependencies:
   flutter_test:

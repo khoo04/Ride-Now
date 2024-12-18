@@ -20,4 +20,7 @@ abstract interface class AuthRepository {
     required String password,
     required String confirmPassword,
   });
+
+  Future<Either<Failure, String>> getBroadcastingAuthToken(
+      {required String channelName, required String socketId});
 }

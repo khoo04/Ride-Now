@@ -35,6 +35,7 @@ import 'package:ride_now_app/features/ride/domain/usecases/fetch_location_auto_c
 import 'package:ride_now_app/features/ride/domain/usecases/fetch_place_details.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/fetch_ride_by_id.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/geocoding_fetch_place_details.dart';
+import 'package:ride_now_app/features/auth/domain/usecases/get_broadcasting_auth_token.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/get_ride_cost_suggestion.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/get_user_created_rides.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/get_user_joined_rides.dart';
@@ -44,7 +45,7 @@ import 'package:ride_now_app/features/ride/presentation/bloc/ride/ride_bloc.dart
 import 'package:ride_now_app/features/ride/presentation/bloc/ride_create/ride_create_bloc.dart';
 import 'package:ride_now_app/features/ride/presentation/bloc/ride_main/ride_main_bloc.dart';
 import 'package:ride_now_app/features/ride/presentation/bloc/ride_search/ride_search_bloc.dart';
-import 'package:ride_now_app/features/ride/presentation/cubit/ride_update_cubit.dart';
+import 'package:ride_now_app/features/ride/presentation/cubit/ride_update/ride_update_cubit.dart';
 import 'package:ride_now_app/features/ride/presentation/cubit/your_ride_list/your_ride_list_cubit.dart';
 
 part 'init_dependencies_main.dart';

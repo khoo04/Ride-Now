@@ -117,4 +117,20 @@ class AuthRepositoryImpl implements AuthRepository {
       return left(Failure(e.message));
     }
   }
+  
+  @override
+  Future<Either<Failure, String>> getBroadcastingAuthToken({required String channelName, required String socketId})  async {
+    try {
+      if (!await (_connectionChecker.isConnected)) {
+        return left(Failure(Constants.noConnectionErrorMessage));
+      }
+      final broadcastAuthToken =
+          await _authRemoteDataSource.getBroadcastingAuthToken(
+              channelName: channelName, socketId: socketId);
+
+      return right(broadcastAuthToken);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
 }

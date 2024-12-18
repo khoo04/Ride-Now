@@ -17,7 +17,7 @@ import 'package:ride_now_app/features/ride/domain/usecases/fetch_place_details.d
 import 'package:ride_now_app/features/ride/domain/usecases/geocoding_fetch_place_details.dart';
 import 'package:ride_now_app/features/ride/presentation/bloc/ride_create/ride_create_bloc.dart';
 import 'package:ride_now_app/features/ride/presentation/bloc/ride_search/ride_search_bloc.dart';
-import 'package:ride_now_app/features/ride/presentation/cubit/ride_update_cubit.dart';
+import 'package:ride_now_app/features/ride/presentation/cubit/ride_update/ride_update_cubit.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/search_ride_screen.dart';
 import 'package:ride_now_app/features/ride/presentation/widgets/ride_input_field.dart';
 import 'package:ride_now_app/init_dependencies.dart';

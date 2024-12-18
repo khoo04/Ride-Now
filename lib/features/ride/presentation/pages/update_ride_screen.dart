@@ -13,7 +13,7 @@ import 'package:ride_now_app/core/utils/simple_alert_dialog.dart';
 import 'package:ride_now_app/features/profile/presentation/pages/register_vehicle_screen.dart';
 import 'package:ride_now_app/features/ride/domain/entities/vehicle.dart';
 import 'package:ride_now_app/features/ride/presentation/bloc/ride_main/ride_main_bloc.dart';
-import 'package:ride_now_app/features/ride/presentation/cubit/ride_update_cubit.dart';
+import 'package:ride_now_app/features/ride/presentation/cubit/ride_update/ride_update_cubit.dart';
 import 'package:ride_now_app/features/ride/presentation/cubit/your_ride_list/your_ride_list_cubit.dart';
 
 import 'package:ride_now_app/features/ride/presentation/pages/search_location_screen.dart';

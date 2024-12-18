@@ -1,18 +1,23 @@
 class ApiRoutes {
-  //static const baseUrl = "http://10.0.2.2:8000/api/RideNowV1";
-  static const baseUrl = "http://192.168.182.11:8000/api/RideNowV1";
+  // static const baseUrl = "http://10.0.2.2:8000/api/RideNowV1";
+  static const baseUrl = "http://192.168.182.11:8000";
+  static const apiBaseUrl = "$baseUrl/api/RideNowV1";
 
   //Stagging
   //static const baseUrl = "https://staging.khoodev.us.kg/api/RideNowV1";
+
+  //Boardcasting Auth Route
+  static const broadcastingAuthEndpoints = "$baseUrl/broadcasting/auth";
+
   //Auth Route
-  static const login = "$baseUrl/auth/login";
-  static const register = "$baseUrl/auth/register";
-  static const logout = "$baseUrl/auth/logout";
-  static const getUserData = "$baseUrl/auth/user";
+  static const login = "$apiBaseUrl/auth/login";
+  static const register = "$apiBaseUrl/auth/register";
+  static const logout = "$apiBaseUrl/auth/logout";
+  static const getUserData = "$apiBaseUrl/auth/user";
 
   //Vehicle Route
   /// Method : GET
-  static const getVehicleType = "$baseUrl/vehicle/types";
+  static const getVehicleType = "$apiBaseUrl/vehicle/types";
 
   /// GET Method for [Access] current logged in user vehicles
   ///
@@ -23,7 +28,7 @@ class ApiRoutes {
   ///
   /// DELETE Method with wild card {vehicle_id} for [Delete] particular vehicle
   /// Eg. vehicle/{vehicle_id}
-  static const vehicle = "$baseUrl/vehicle";
+  static const vehicle = "$apiBaseUrl/vehicle";
 
   //Ride Route
   /// Method : GET,  Query Params: page, to get all available ride with pagination
@@ -35,18 +40,18 @@ class ApiRoutes {
   ///
   /// DELETE Method with wild card {ride_id} for [Delete] particular vehicle
   /// Eg. ride/{ride_id}
-  static const ride = "$baseUrl/ride";
+  static const ride = "$apiBaseUrl/ride";
 
   ///Method: GET
   ///
   /// Params : {ride_id} wild card
   ///
   /// E.g. details/{ride_id}
-  static const rideDetails = "$baseUrl/ride/details";
+  static const rideDetails = "$apiBaseUrl/ride/details";
 
   //Ride - Driver Route
   /// GET User Created Rides
-  static const createdRides = "$baseUrl/ride/createdRides";
+  static const createdRides = "$apiBaseUrl/ride/createdRides";
 
   //Ride - Passenger Route
   ///Route to Join Ride
@@ -54,24 +59,24 @@ class ApiRoutes {
   /// Method : POST
   ///
   /// E.g: join/{ride_id}
-  static const joinRide = "$baseUrl/ride/join";
+  static const joinRide = "$apiBaseUrl/ride/join";
 
   ///Route to Search Ride
   ///
   ///Method : GET
   ///
   ///Supported Query Params: origin, destination, seats, departure_time
-  static const searchRide = "$baseUrl/ride/search";
+  static const searchRide = "$apiBaseUrl/ride/search";
 
   ///Route to Get Joined Rides
   ///
   ///Method : GET
   ///
   ///Get All Joined Rides
-  static const joinedRides = "$baseUrl/ride/joinedRides";
+  static const joinedRides = "$apiBaseUrl/ride/joinedRides";
 
   ///User Route
-  static const profile = "$baseUrl/users";
+  static const profile = "$apiBaseUrl/users";
 
   ///Route to get users vouchers
   /// Method: GET

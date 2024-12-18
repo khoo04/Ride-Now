@@ -34,6 +34,7 @@ class RideBloc extends Bloc<RideEvent, RideState> {
     on<FetchRideDetails>(_onFetchRideById);
     on<CancelRideEvent>(_onCancelRide);
     on<ResetRideStateEvent>(_onResetRideBloc);
+    on<UpdateSelectedRide>(_onUpdateSelectedRide);
   }
 
   void _onSelectRide(SelectRideEvent event, Emitter<RideState> emit) {
@@ -92,5 +93,16 @@ class RideBloc extends Bloc<RideEvent, RideState> {
 
   void _onResetRideBloc(ResetRideStateEvent event, Emitter<RideState> emit) {
     emit(const RideInitial());
+  }
+
+  void _onUpdateSelectedRide(
+      UpdateSelectedRide event, Emitter<RideState> emit) {
+    if (state is! RideSelected) return;
+
+    final currentState = state as RideSelected;
+
+    if (currentState.ride.rideId != event.updatedRide.rideId) return;
+
+    emit(currentState.copyWith(ride: event.updatedRide));
   }
 }

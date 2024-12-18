@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:ride_now_app/core/common/entities/user.dart';
 import 'package:ride_now_app/core/common/widgets/app_button.dart';
 import 'package:ride_now_app/core/common/widgets/cancel_button.dart';
@@ -19,9 +20,8 @@ import 'package:ride_now_app/core/utils/round_cost.dart';
 import 'package:ride_now_app/core/utils/show_snackbar.dart';
 import 'package:ride_now_app/core/utils/string_extension.dart';
 import 'package:ride_now_app/features/payment/presentation/pages/payment_web_screen.dart';
-import 'package:ride_now_app/features/ride/domain/entities/ride.dart';
 import 'package:ride_now_app/features/ride/presentation/bloc/ride/ride_bloc.dart';
-import 'package:ride_now_app/features/ride/presentation/cubit/ride_update_cubit.dart';
+import 'package:ride_now_app/features/ride/presentation/cubit/ride_update/ride_update_cubit.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/pick_voucher_screen.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/update_ride_screen.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/in_app_navigation_screen.dart';
@@ -35,6 +35,7 @@ class RideDetailScreen extends StatefulWidget {
 }
 
 class _RideDetailScreenState extends State<RideDetailScreen> {
+  final PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
   late RideBloc _rideBloc;
   @override
   void initState() {
@@ -43,6 +44,11 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
     if (_rideBloc.state is RideSelected) {
       _rideBloc.add(FetchRideDetails(rideId: _rideBloc.state.rideId!));
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -592,14 +598,14 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.star,
                         size: 12,
                       ),
                       //TODO Ratings
                       Text(
                         " ${state.ride.driver.ratings} / 5.0",
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
                           color: AppPallete.hintColor,
@@ -672,53 +678,55 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
           ),
         ),
         const Spacer(),
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 8.0),
-          child: Divider(),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text.rich(
-              TextSpan(
-                children: [
-                  const TextSpan(
-                    text: "Total price for ",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black,
+        if (state.ride.passengers.any((passenger) => passenger.id != user.id))
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            child: Divider(),
+          ),
+        if (state.ride.passengers.any((passenger) => passenger.id != user.id))
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text.rich(
+                TextSpan(
+                  children: [
+                    const TextSpan(
+                      text: "Total price for ",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
-                  TextSpan(
-                    text: "${state.seats} ",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.red, // Highlighted in red
+                    TextSpan(
+                      text: "${state.seats} ",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.red, // Highlighted in red
+                      ),
                     ),
-                  ),
-                  TextSpan(
-                    text: state.seats > 1 ? "passengers" : "passenger",
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black,
+                    TextSpan(
+                      text: state.seats > 1 ? "passengers" : "passenger",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Text(
-              "RM ${calculateRidePrice(baseCost: state.ride.baseCost, currentPassengersCount: state.ride.passengers.length, requiredSeats: state.seats).toStringAsFixed(2)}",
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppPallete.primaryColor,
+              Text(
+                "RM ${calculateRidePrice(baseCost: state.ride.baseCost, currentPassengersCount: state.ride.passengers.length, requiredSeats: state.seats).toStringAsFixed(2)}",
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: AppPallete.primaryColor,
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 24.0),
           child: Center(
@@ -739,10 +747,10 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                   .any((passenger) => passenger.id == user.id)) {
                 return AppButton(
                   onPressed: () {
-                    //View the ride (navigation and maps)
+                    Navigator.of(context)
+                        .pushNamed(InAppNavigationScreen.routeName);
                   },
-                  child:
-                      const Text("Your have joined this ride, Click to view"),
+                  child: const Text("View Ride Details"),
                 );
               } else {
                 return AppButton(
@@ -811,6 +819,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                                       Center(
                                         child: AppButton(
                                             onPressed: () {
+                                              //TODO Implementing Payment
                                               Navigator.of(context).push(
                                                   MaterialPageRoute(
                                                       builder: (context) =>

@@ -7,7 +7,7 @@ import 'package:ride_now_app/core/utils/format_date.dart';
 import 'package:ride_now_app/core/utils/format_time.dart';
 import 'package:ride_now_app/features/ride/presentation/bloc/ride/ride_bloc.dart';
 import 'package:ride_now_app/features/ride/presentation/bloc/ride_main/ride_main_bloc.dart';
-import 'package:ride_now_app/features/ride/presentation/cubit/ride_update_cubit.dart';
+import 'package:ride_now_app/features/ride/presentation/cubit/ride_update/ride_update_cubit.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/ride_detail_screen.dart';
 
 class UpdateRideSuccessScreen extends StatelessWidget {

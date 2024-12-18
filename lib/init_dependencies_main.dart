@@ -95,6 +95,11 @@ void _initAuth() {
         serviceLocator<AuthRepository>(),
       ),
     )
+    ..registerFactory(
+      () => GetBroadcastingAuthToken(
+        serviceLocator<AuthRepository>(),
+      ),
+    )
     .. //Bloc use Lazy Singleton, so that the state will not lose
         registerLazySingleton(
       () => AuthBloc(
