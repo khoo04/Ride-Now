@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:ride_now_app/core/utils/logger.dart';
+import 'package:ride_now_app/features/payment/presentation/cubit/payment_cubit.dart';
+import 'package:ride_now_app/features/payment/presentation/pages/payment_result_screen.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class PaymentWebScreen extends StatefulWidget {
+  static const routeName = 'payment/web';
   const PaymentWebScreen({super.key});
 
   @override
@@ -15,9 +20,10 @@ class _PaymentWebScreenState extends State<PaymentWebScreen> {
   @override
   void initState() {
     super.initState();
-
     final WebViewController controller = WebViewController();
-    // #enddocregion platform_features
+
+    final paymentState =
+        context.read<PaymentCubit>().state as PaymentInitSuccess;
 
     controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -45,16 +51,23 @@ Page resource error:
             debugPrint('Error occurred on page: ${error.response?.statusCode}');
           },
           onUrlChange: (UrlChange change) {
+            if (change.url ==
+                "https://khoodev.us.kg/api/RideNowV1/payment/callback") {
+              Navigator.of(context)
+                  .popAndPushNamed(PaymentResultScreen.routeName);
+            }
             eLog('url change to ${change.url}');
           },
         ),
       )
-      ..loadRequest(Uri.parse(
-          'http://192.168.182.11:8000/api/RideNowV1/payment/eyJpdiI6IjNDZlBUQkZDZXBsK1dEY05QMFowR2c9PSIsInZhbHVlIjoiUWpnVUR3b2JqbEUwUUpvbVFKakFlck1hREpqUXl2QnZ0V2lQMVZZVHp4ST0iLCJtYWMiOiIwZWNjOGEwZDZmMzM3OTMxMTlkMGI2NmNmNmQxZmYxMWU5OTdiMmJiYzYxMDhiNDA4OWRjMDcwOGI4NDE1MWM3In0='));
-
-    // #enddocregion platform_features
-
+      ..loadRequest(Uri.parse(paymentState.paymentLink));
+    context.read<PaymentCubit>().setRequestProcessing();
     _controller = controller;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -63,24 +76,8 @@ Page resource error:
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: const Text('Ride Payment'),
-        // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
       ),
       body: WebViewWidget(controller: _controller),
-      floatingActionButton: favoriteButton(),
-    );
-  }
-
-  Widget favoriteButton() {
-    return FloatingActionButton(
-      onPressed: () async {
-        final String? url = await _controller.currentUrl();
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Favorited $url')),
-          );
-        }
-      },
-      child: const Icon(Icons.favorite),
     );
   }
 }

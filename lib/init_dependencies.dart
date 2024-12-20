@@ -15,6 +15,10 @@ import 'package:ride_now_app/features/auth/domain/usecases/user_logout.dart';
 import 'package:ride_now_app/features/auth/domain/usecases/user_register.dart';
 import 'package:ride_now_app/features/auth/domain/usecases/user_remember_me_status_checked.dart';
 import 'package:ride_now_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:ride_now_app/features/payment/data/datasources/payment_remote_data_source.dart';
+import 'package:ride_now_app/features/payment/data/repositories/payment_repository_impl.dart';
+import 'package:ride_now_app/features/payment/domain/repositories/payment_repository.dart';
+import 'package:ride_now_app/features/payment/presentation/cubit/payment_cubit.dart';
 import 'package:ride_now_app/features/profile/data/datasources/profile_remote_data_source.dart';
 import 'package:ride_now_app/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:ride_now_app/features/profile/domain/repositories/profile_repository.dart';
@@ -37,6 +41,7 @@ import 'package:ride_now_app/features/ride/domain/usecases/fetch_ride_by_id.dart
 import 'package:ride_now_app/features/ride/domain/usecases/geocoding_fetch_place_details.dart';
 import 'package:ride_now_app/features/auth/domain/usecases/get_broadcasting_auth_token.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/get_ride_cost_suggestion.dart';
+import 'package:ride_now_app/features/payment/domain/usecases/get_ride_payment_link.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/get_user_created_rides.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/get_user_joined_rides.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/search_available_rides.dart';

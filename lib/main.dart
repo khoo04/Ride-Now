@@ -8,8 +8,11 @@ import 'package:ride_now_app/core/theme/theme.dart';
 import 'package:ride_now_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:ride_now_app/features/auth/presentation/pages/login_screen.dart';
 import 'package:ride_now_app/features/auth/presentation/pages/register_screen.dart';
+import 'package:ride_now_app/features/payment/presentation/cubit/payment_cubit.dart';
 import 'package:ride_now_app/features/payment/presentation/pages/payment_failed_screen.dart';
+import 'package:ride_now_app/features/payment/presentation/pages/payment_result_screen.dart';
 import 'package:ride_now_app/features/payment/presentation/pages/payment_success_screen.dart';
+import 'package:ride_now_app/features/payment/presentation/pages/payment_web_screen.dart';
 import 'package:ride_now_app/features/profile/presentation/bloc/vehicle/vehicle_bloc.dart';
 import 'package:ride_now_app/features/profile/presentation/bloc/voucher/voucher_bloc.dart';
 import 'package:ride_now_app/features/profile/presentation/pages/manage_vehicles_screen.dart';
@@ -73,6 +76,9 @@ void main() async {
     BlocProvider(
       create: (_) => serviceLocator<YourRideListCubit>(),
     ),
+    BlocProvider(
+      create: (_) => serviceLocator<PaymentCubit>(),
+    ),
   ], child: const MyApp()));
 }
 
@@ -134,8 +140,11 @@ class _MyAppState extends State<MyApp> {
             const UpdateRideSuccessScreen(),
         PickVoucherScreen.routeName: (context) => const PickVoucherScreen(),
         //Payment
+        PaymentWebScreen.routeName: (context) => const PaymentWebScreen(),
+        PaymentResultScreen.routeName: (context) => const PaymentResultScreen(),
         PaymentFailedScreen.routeName: (context) => const PaymentFailedScreen(),
-        PaymentSuccessScreen.routeName : (context) => const PaymentSuccessScreen(),
+        PaymentSuccessScreen.routeName: (context) =>
+            const PaymentSuccessScreen(),
       },
     );
   }

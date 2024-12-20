@@ -50,6 +50,7 @@ class RideCreateBloc extends Bloc<RideCreateEvent, RideCreateState> {
       toPlace: event.destination,
       departureDateTime: event.departureTime,
       selectedVehicle: event.selectedVehicle,
+      priceSuggstion: event.price,
     ));
   }
 

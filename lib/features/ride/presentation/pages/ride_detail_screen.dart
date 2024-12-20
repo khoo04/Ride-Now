@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
@@ -19,6 +17,7 @@ import 'package:ride_now_app/core/utils/open_contact_dialog.dart';
 import 'package:ride_now_app/core/utils/round_cost.dart';
 import 'package:ride_now_app/core/utils/show_snackbar.dart';
 import 'package:ride_now_app/core/utils/string_extension.dart';
+import 'package:ride_now_app/features/payment/presentation/cubit/payment_cubit.dart';
 import 'package:ride_now_app/features/payment/presentation/pages/payment_web_screen.dart';
 import 'package:ride_now_app/features/ride/presentation/bloc/ride/ride_bloc.dart';
 import 'package:ride_now_app/features/ride/presentation/cubit/ride_update/ride_update_cubit.dart';
@@ -463,7 +462,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                 ),
               ),
               Text(
-                "RM ${state.ride.baseCost}",
+                "RM ${state.ride.baseCost.toStringAsFixed(2)}",
                 style: const TextStyle(
                   fontSize: 16,
                   color: AppPallete.primaryColor,
@@ -819,11 +818,41 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                                       Center(
                                         child: AppButton(
                                             onPressed: () {
-                                              //TODO Implementing Payment
-                                              Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          PaymentWebScreen()));
+                                              final paymentAmount =
+                                                  calculateRidePrice(
+                                                      baseCost:
+                                                          state.ride.baseCost,
+                                                      currentPassengersCount:
+                                                          state.ride.passengers
+                                                              .length,
+                                                      requiredSeats:
+                                                          state.seats);
+                                              context
+                                                  .read<PaymentCubit>()
+                                                  .initializePayment(
+                                                    rideId: state.ride.rideId,
+                                                    paymentAmount:
+                                                        paymentAmount,
+                                                    requiredSeats: state.seats,
+                                                  )
+                                                  .then((paymentState) {
+                                                if (context.mounted) {
+                                                  if (paymentState
+                                                      is PaymentInitSuccess) {
+                                                    Navigator.of(context)
+                                                        .pushNamed(
+                                                      PaymentWebScreen
+                                                          .routeName,
+                                                    );
+                                                  } else if (paymentState
+                                                      is PaymentInitFailed) {
+                                                    showSnackBar(
+                                                      context,
+                                                      paymentState.message,
+                                                    );
+                                                  }
+                                                }
+                                              });
                                             },
                                             child: const Text("Join ride")),
                                       ),
@@ -896,7 +925,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                         ),
                       ),
                       Text(
-                        "RM ${roundToNearestFiveCents(state.ride.baseCost)}",
+                        "RM ${roundToNearestFiveCents(state.ride.baseCost).toStringAsFixed(2)}",
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,

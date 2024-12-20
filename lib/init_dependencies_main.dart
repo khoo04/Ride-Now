@@ -7,6 +7,7 @@ Future<void> initDependencies() async {
   _initAuth();
   _initRide();
   _initProfile();
+  _initPayment();
 
   serviceLocator.registerLazySingleton(() => AppUserCubit());
 }
@@ -281,6 +282,33 @@ void _initProfile() {
         createVehicle: serviceLocator<CreateVehicle>(),
         updateVehicle: serviceLocator<UpdateVehicle>(),
         deleteVehicle: serviceLocator<DeleteVehicle>(),
+      ),
+    );
+}
+
+void _initPayment() {
+  serviceLocator
+    ..registerFactory<PaymentRemoteDataSource>(
+      () => PaymentRemoteDataSourceImpl(
+        serviceLocator<NetworkClient>(),
+        serviceLocator<FlutterSecureStorage>(),
+      ),
+    )
+    ..registerFactory<PaymentRepository>(
+      () => PaymentRepositoryImpl(
+        serviceLocator<PaymentRemoteDataSource>(),
+        serviceLocator<ConnectionChecker>(),
+      ),
+    )
+    //Use Case
+    ..registerFactory(
+      () => GetRidePaymentLink(
+        serviceLocator<PaymentRepository>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => PaymentCubit(
+        getRidePaymentLink: serviceLocator<GetRidePaymentLink>(),
       ),
     );
 }

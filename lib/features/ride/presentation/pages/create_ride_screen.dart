@@ -54,7 +54,7 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18.0),
           child: BlocConsumer<RideCreateBloc, RideCreateState>(
@@ -88,7 +88,9 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                   _rideCreateBloc.add(InitializeCreateRideEvent());
                   //Refresh Main Screen
                   if (context.mounted) {
-                    context.read<RideMainBloc>().add(RetrieveAvailabeRides());
+                    context
+                        .read<RideMainBloc>()
+                        .add(const RetrieveAvailabeRides());
                   }
                 });
               } else if (state is RideCreateFailure) {
@@ -309,6 +311,36 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                                 return null;
                               },
                               keyboardType: TextInputType.number,
+                              onChanged: (price) {
+                                //TODO: Change the logic
+                                // Extract only digits and the decimal point from the input
+                                String extractedNumber =
+                                    price.replaceAll(RegExp('[^0-9]'), '');
+
+                                if (extractedNumber.length >= 2) {
+                                  //If number length is have more than 2 places, add the '.'
+                                  extractedNumber =
+                                      "${extractedNumber.substring(0, extractedNumber.length - 2)}.${extractedNumber.substring(extractedNumber.length - 2)}";
+                                } else {
+                                  extractedNumber =
+                                      "0.${extractedNumber.padLeft(2, '0')}";
+                                }
+                                //Replace 0 for start of line
+                                extractedNumber = extractedNumber.replaceFirst(
+                                    RegExp('0'), '');
+
+                                if (extractedNumber.startsWith(".")) {
+                                  extractedNumber = '0$extractedNumber';
+                                }
+                                // Ensure a valid double value
+                                final userInputPrice =
+                                    double.tryParse(extractedNumber) ?? 0.0;
+                                baseCostController.text = extractedNumber;
+
+                                // Use the parsed price in your function
+                                _rideCreateBloc.add(UpdateCreateRideParams(
+                                    price: userInputPrice));
+                              },
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,

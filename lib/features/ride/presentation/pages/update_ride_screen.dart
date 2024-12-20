@@ -61,7 +61,7 @@ class _UpdateRideScreenState extends State<UpdateRideScreen> {
             Navigator.pop(context);
           }),
         ),
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18.0),
           child: BlocConsumer<RideUpdateCubit, RideUpdateState>(
@@ -313,6 +313,36 @@ class _UpdateRideScreenState extends State<UpdateRideScreen> {
                                   return "Base cost cannot be empty";
                                 }
                                 return null;
+                              },
+                              onChanged: (price) {
+                                //TODO: Change the logi
+                                // Extract only digits and the decimal point from the input
+                                String extractedNumber =
+                                    price.replaceAll(RegExp('[^0-9]'), '');
+
+                                if (extractedNumber.length >= 2) {
+                                  //If number length is have more than 2 places, add the '.'
+                                  extractedNumber =
+                                      "${extractedNumber.substring(0, extractedNumber.length - 2)}.${extractedNumber.substring(extractedNumber.length - 2)}";
+                                } else {
+                                  extractedNumber =
+                                      "0.${extractedNumber.padLeft(2, '0')}";
+                                }
+                                //Replace 0 for start of line
+                                extractedNumber = extractedNumber.replaceFirst(
+                                    RegExp('0'), '');
+
+                                if (extractedNumber.startsWith(".")) {
+                                  extractedNumber = '0$extractedNumber';
+                                }
+                                // Ensure a valid double value
+                                final userInputPrice =
+                                    double.tryParse(extractedNumber) ?? 0.0;
+                                baseCostController.text = extractedNumber;
+
+                                // Use the parsed price in your function
+                                _rideUpdateCubit.onChangeRideDetails(
+                                    price: userInputPrice);
                               },
                               keyboardType: TextInputType.number,
                             ),
