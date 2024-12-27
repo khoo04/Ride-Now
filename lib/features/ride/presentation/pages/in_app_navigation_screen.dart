@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:ride_now_app/core/common/entities/user.dart';
 import 'package:ride_now_app/core/common/widgets/app_button.dart';
 import 'package:ride_now_app/core/common/widgets/my_app_bar.dart';
@@ -18,6 +18,7 @@ import 'package:ride_now_app/core/utils/format_time.dart';
 import 'package:ride_now_app/core/utils/logger.dart';
 import 'package:ride_now_app/core/utils/open_contact_dialog.dart';
 import 'package:ride_now_app/core/utils/show_snackbar.dart';
+import 'package:ride_now_app/core/utils/string_extension.dart';
 import 'package:ride_now_app/features/ride/domain/entities/ride.dart';
 import 'package:ride_now_app/features/ride/presentation/bloc/ride/ride_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -218,7 +219,7 @@ class _InAppNavigationScreenState extends State<InAppNavigationScreen> {
                           builder: (context, currentPosition, _) {
                             return GoogleMap(
                               onMapCreated: (GoogleMapController controller) {
-                                _controller.complete(controller);
+                                //_controller.complete(controller);
                               },
                               initialCameraPosition: CameraPosition(
                                 target: LatLng(ride.origin.latitude,
@@ -306,191 +307,13 @@ class _InAppNavigationScreenState extends State<InAppNavigationScreen> {
                         ],
                       ),
                     ),
-                    DraggableScrollableSheet(
-                      minChildSize: 0.4,
-                      initialChildSize: 0.4,
-                      maxChildSize: 0.8,
-                      controller: sheetController,
-                      builder: (BuildContext context, scrollController) {
-                        return Column(
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  ElevatedButton.icon(
-                                    style: ElevatedButton.styleFrom(
-                                        foregroundColor:
-                                            AppPallete.primaryColor,
-                                        backgroundColor: AppPallete.whiteColor,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8.0))),
-                                    icon: const Icon(Icons.navigation),
-                                    onPressed: () async {
-                                      try {
-                                        await openMap(ride.destination.latitude,
-                                            ride.destination.longitude);
-                                      } catch (e) {
-                                        if (context.mounted) {
-                                          showSnackBar(context, e.toString());
-                                        }
-                                      }
-                                    },
-                                    label:
-                                        const Text("Navigate on Google Maps"),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              child: Container(
-                                clipBehavior: Clip.hardEdge,
-                                decoration: const BoxDecoration(
-                                  color: AppPallete.whiteColor,
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(25),
-                                    topRight: Radius.circular(25),
-                                  ),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0),
-                                child: Stack(
-                                  children: [
-                                    SizedBox(
-                                      width: MediaQuery.of(context).size.width,
-                                      child: ride.passengers.isNotEmpty
-                                          ? const Center(
-                                              child: Text(
-                                                "No Passengers",
-                                                style: TextStyle(
-                                                  color: AppPallete.errorColor,
-                                                ),
-                                              ),
-                                            )
-                                          : ListView.separated(
-                                              controller: scrollController,
-                                              itemBuilder: (context, index) {
-                                                if (index == 0) {
-                                                  return const SizedBox(
-                                                    height: 76,
-                                                  );
-                                                }
-                                                // return _buildPassengersListTile(
-                                                //     ride,
-                                                //     context,
-                                                //     ride.passengers[index - 1]);
-                                                return ListTile(
-                                                    title: Text((index - 1)
-                                                        .toString()));
-                                              },
-                                              separatorBuilder:
-                                                  (context, index) {
-                                                if (index == 0) {
-                                                  return const SizedBox
-                                                      .shrink();
-                                                }
-                                                return const Divider();
-                                              },
-                                              itemCount: 11),
-                                    ),
-                                    IgnorePointer(
-                                      child: Column(
-                                        children: [
-                                          Container(
-                                            height: 76,
-                                            color: Colors.white,
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.max,
-                                              children: [
-                                                // Non-scrollable header that triggers scrollController
-                                                Center(
-                                                  child: Container(
-                                                    decoration: BoxDecoration(
-                                                      color: Theme.of(context)
-                                                          .hintColor,
-                                                      borderRadius:
-                                                          const BorderRadius
-                                                              .all(
-                                                              Radius.circular(
-                                                                  10)),
-                                                    ),
-                                                    height: 4,
-                                                    width: 40,
-                                                    margin: const EdgeInsets
-                                                        .symmetric(
-                                                        vertical: 8.0),
-                                                  ),
-                                                ),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    const Expanded(
-                                                      child: Text(
-                                                        "Please wait your passengers in origin",
-                                                        softWrap: true,
-                                                        style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w500),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 8),
-                                                    Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .end,
-                                                      children: [
-                                                        Text(
-                                                          formatTime(ride
-                                                              .departureTime),
-                                                          style: const TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600),
-                                                        ),
-                                                        Text(
-                                                          formatDate(ride
-                                                              .departureTime),
-                                                          style: const TextStyle(
-                                                              color: AppPallete
-                                                                  .hintColor),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                                const Divider(thickness: 1),
-                                              ],
-                                            ),
-                                          ),
-                                          const Spacer(),
-                                          Container(
-                                            color: AppPallete.whiteColor,
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 8.0),
-                                            child: AppButton(
-                                              onPressed: ride.passengers.isEmpty
-                                                  ? null
-                                                  : () {},
-                                              child: const Text("Start Ride"),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
+                    Builder(builder: (context) {
+                      if (isDriver) {
+                        return _driverView(context, ride);
+                      } else {
+                        return _passengerView(context, ride, userState.user);
+                      }
+                    }),
                     //   Column(
                     //     mainAxisAlignment: MainAxisAlignment.end,
                     //     mainAxisSize: MainAxisSize.max,
@@ -537,17 +360,503 @@ class _InAppNavigationScreenState extends State<InAppNavigationScreen> {
     );
   }
 
+  Widget _driverView(BuildContext context, Ride ride) {
+    return DraggableScrollableSheet(
+      minChildSize: 0.4,
+      initialChildSize: 0.4,
+      maxChildSize: 0.8,
+      controller: sheetController,
+      builder: (BuildContext context, scrollController) {
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                        foregroundColor: AppPallete.primaryColor,
+                        backgroundColor: AppPallete.whiteColor,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0))),
+                    icon: const Icon(Icons.navigation),
+                    onPressed: () async {
+                      try {
+                        await openMap(ride.destination.latitude,
+                            ride.destination.longitude);
+                      } catch (e) {
+                        if (context.mounted) {
+                          showSnackBar(context, e.toString());
+                        }
+                      }
+                    },
+                    label: const Text("Navigate on Google Maps"),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Container(
+                clipBehavior: Clip.hardEdge,
+                decoration: const BoxDecoration(
+                  color: AppPallete.whiteColor,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(25),
+                    topRight: Radius.circular(25),
+                  ),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Stack(
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: ride.passengers.isEmpty
+                          ? const Center(
+                              child: Text(
+                                "No Passengers",
+                                style: TextStyle(
+                                  color: AppPallete.errorColor,
+                                ),
+                              ),
+                            )
+                          : Builder(builder: (context) {
+                              final groupedPassengers = groupBy(ride.passengers,
+                                  (User passenger) => passenger.id);
+
+                              final passengerEntries = groupedPassengers.entries
+                                  .map((entry) => {
+                                        'user': entry
+                                            .value.first, // Get the User object
+                                        'count': entry.value.length
+                                      })
+                                  .toList();
+
+                              return ListView.separated(
+                                  controller: scrollController,
+                                  itemBuilder: (context, index) {
+                                    if (index == 0) {
+                                      return const SizedBox(
+                                        height: 76,
+                                      );
+                                    }
+                                    final entry = passengerEntries[index - 1];
+                                    final passenger = entry['user'] as User;
+                                    final count = entry['count'] as int;
+
+                                    return _buildPassengersListTile(
+                                        ride, context, passenger, count);
+                                  },
+                                  separatorBuilder: (context, index) {
+                                    if (index == 0) {
+                                      return const SizedBox.shrink();
+                                    }
+                                    return const Divider();
+                                  },
+                                  itemCount: passengerEntries.length + 1);
+                            }),
+                    ),
+                    Column(
+                      children: [
+                        IgnorePointer(
+                          child: Container(
+                            height: 76,
+                            color: Colors.white,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                // Non-scrollable header that triggers scrollController
+                                Center(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).hintColor,
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(10)),
+                                    ),
+                                    height: 4,
+                                    width: 40,
+                                    margin: const EdgeInsets.symmetric(
+                                        vertical: 8.0),
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Builder(builder: (context) {
+                                        String message;
+                                        switch (ride.status) {
+                                          case "started":
+                                            message = "Ride started";
+                                            break;
+                                          case "completed":
+                                          default:
+                                            message =
+                                                "Please wait your passengers in origin";
+                                        }
+                                        return Text(
+                                          message,
+                                          softWrap: true,
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.w500),
+                                        );
+                                      }),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          formatTime(ride.departureTime),
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                        Text(
+                                          formatDate(ride.departureTime),
+                                          style: const TextStyle(
+                                              color: AppPallete.hintColor),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                const Divider(thickness: 1),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const Spacer(),
+                        Container(
+                          color: AppPallete.whiteColor,
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Builder(builder: (context) {
+                            final status = ride.status;
+                            if (status == "confirmed") {
+                              if (false) {
+                                return const AppButton(
+                                  onPressed: null,
+                                  child: Text("Start Ride"),
+                                );
+                              } else {
+                                return AppButton(
+                                  onPressed: () {
+                                    context
+                                        .read<RideBloc>()
+                                        .add(StartRideEvent(ride.rideId));
+                                  },
+                                  child: const Text("Start Ride"),
+                                );
+                              }
+                            } else if (ride.status == "started") {
+                              return AppButton(
+                                onPressed: () {
+                                  context
+                                      .read<RideBloc>()
+                                      .add(CompleteRideEvent(ride.rideId));
+                                },
+                                child: const Text("Complete Ride"),
+                              );
+                            } else {
+                              return const AppButton(
+                                  onPressed: null,
+                                  child: Text("Ride Completed"));
+                            }
+                          }),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _passengerView(BuildContext context, Ride ride, User passenger) {
+    int seastCount =
+        ride.passengers.where((user) => user.id == passenger.id).length;
+    return Positioned(
+      bottom: 0,
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: 270,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                        foregroundColor: AppPallete.primaryColor,
+                        backgroundColor: AppPallete.whiteColor,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0))),
+                    icon: const Icon(Icons.navigation),
+                    onPressed: () async {
+                      try {
+                        await openMap(ride.destination.latitude,
+                            ride.destination.longitude);
+                      } catch (e) {
+                        if (context.mounted) {
+                          showSnackBar(context, e.toString());
+                        }
+                      }
+                    },
+                    label: const Text("Navigate on Google Maps"),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                clipBehavior: Clip.hardEdge,
+                decoration: const BoxDecoration(
+                  color: AppPallete.whiteColor,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(25),
+                    topRight: Radius.circular(25),
+                  ),
+                ),
+                child: Container(
+                  color: Colors.white,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      // Non-scrollable header that triggers scrollController
+                      Center(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).hintColor,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(10)),
+                          ),
+                          height: 4,
+                          width: 40,
+                          margin: const EdgeInsets.symmetric(vertical: 8.0),
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Builder(builder: (context) {
+                              String message;
+                              switch (ride.status) {
+                                case "started":
+                                  message = "Please make sure you are on ride";
+                                  break;
+                                default:
+                                  message = "Please wait your driver in origin";
+                              }
+                              return Text(
+                                message,
+                                softWrap: true,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500),
+                              );
+                            }),
+                          ),
+                          const SizedBox(width: 8),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                formatTime(ride.departureTime),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              Text(
+                                formatDate(ride.departureTime),
+                                style: const TextStyle(
+                                    color: AppPallete.hintColor),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const Divider(thickness: 1),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            const Row(
+                              children: [
+                                Text(
+                                  "Driver Information",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 4,
+                            ),
+                            Row(
+                              children: [
+                                Builder(builder: (context) {
+                                  ImageProvider<Object>? imageToDisplay;
+                                  final url = ride.driver.profilePicture;
+
+                                  if (url != null) {
+                                    imageToDisplay = NetworkImage(url);
+                                  } else {
+                                    imageToDisplay = null;
+                                  }
+                                  return CircleAvatar(
+                                    backgroundColor: Colors.grey[300],
+                                    foregroundImage: imageToDisplay,
+                                    child: imageToDisplay == null
+                                        ? const Icon(
+                                            Icons.person,
+                                            color: Colors.white,
+                                          )
+                                        : null,
+                                  );
+                                }),
+                                const SizedBox(
+                                  width: 16,
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    ride.driver.name,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+                                String introTemplate =
+                                    "Hi driver, I am passenger ${passenger.name} on RideNow for ride on ${formatDate(ride.departureTime)}, ${formatTime(ride.departureTime)} from ${ride.origin.formattedAddress} to ${ride.destination.formattedAddress}. Please arrive the meeting point soon!";
+                                await showContactMethodPicker(
+                                    context, ride.driver.phone, introTemplate);
+
+                                return;
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.chat,
+                                      color: AppPallete.primaryColor,
+                                    ),
+                                    const SizedBox(
+                                      width: 8,
+                                    ),
+                                    Text(
+                                      "Contact ${ride.driver.name}",
+                                      style: const TextStyle(
+                                          color: AppPallete.primaryColor),
+                                    ),
+                                    const Spacer(),
+                                    const Icon(Icons.chevron_right),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const Divider(
+                              thickness: 1,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Builder(builder: (context) {
+                                  Color color;
+                                  switch (ride.status) {
+                                    case "started":
+                                      color = Colors.green;
+                                      break;
+                                    case "completed":
+                                      color = Colors.red;
+                                      break;
+                                    case "confirmed":
+                                    default:
+                                      color = AppPallete.primaryColor;
+                                  }
+
+                                  return Text.rich(
+                                    TextSpan(
+                                      text: "Status : ",
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w600),
+                                      children: [
+                                        TextSpan(
+                                          text: ride.status.capitalize(),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: color),
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                }),
+                                Text.rich(
+                                  TextSpan(
+                                      text: "Seats : ",
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w600),
+                                      children: [
+                                        TextSpan(
+                                            text: "$seastCount",
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            )),
+                                      ]),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   SizedBox _buildPassengersListTile(
-      Ride ride, BuildContext context, User passenger) {
+      Ride ride, BuildContext context, User passenger, int seats) {
     return SizedBox(
       child: Column(
         children: [
           Row(
             children: [
-              const CircleAvatar(
-                backgroundImage:
-                    AssetImage("assets/images/profile_placeholder.png"),
-              ),
+              Builder(builder: (context) {
+                ImageProvider<Object>? imageToDisplay;
+                final url = passenger.profilePicture;
+
+                if (url != null) {
+                  imageToDisplay = NetworkImage(url);
+                } else {
+                  imageToDisplay = null;
+                }
+                return CircleAvatar(
+                  backgroundColor: Colors.grey[300],
+                  foregroundImage: imageToDisplay,
+                  child: imageToDisplay == null
+                      ? const Icon(
+                          Icons.person,
+                          color: Colors.white,
+                        )
+                      : null,
+                );
+              }),
               const SizedBox(
                 width: 16,
               ),
@@ -557,10 +866,25 @@ class _InAppNavigationScreenState extends State<InAppNavigationScreen> {
                   style: const TextStyle(fontWeight: FontWeight.w500),
                 ),
               ),
-              Checkbox(
-                value: false,
-                onChanged: (value) {},
-              ),
+              Text.rich(
+                TextSpan(
+                  text: "x ",
+                  children: [
+                    TextSpan(
+                      text: "$seats",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    TextSpan(
+                      text: seats == 1 ? " seat" : " seats",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ],
+                ),
+              )
             ],
           ),
           GestureDetector(
@@ -573,7 +897,7 @@ class _InAppNavigationScreenState extends State<InAppNavigationScreen> {
               return;
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              padding: const EdgeInsets.only(top: 12.0),
               child: Row(
                 children: [
                   const Icon(

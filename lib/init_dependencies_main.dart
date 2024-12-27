@@ -51,7 +51,16 @@ void _initUtils() {
       () => InternetConnection(),
     )
     ..registerFactory<ConnectionChecker>(
-        () => ConnectionCheckerImpl(serviceLocator<InternetConnection>()));
+      () => ConnectionCheckerImpl(
+        serviceLocator<InternetConnection>(),
+      ),
+    )
+    ..registerLazySingleton<ImageHelper>(
+      () => ImageHelper(
+        imagePicker: ImagePicker(),
+        imageCropper: ImageCropper(),
+      ),
+    );
 }
 
 void _initAuth() {
@@ -190,6 +199,23 @@ void _initRide() {
         serviceLocator<RideRepository>(),
       ),
     )
+    ..registerFactory(
+      () => StartRide(
+        serviceLocator<RideRepository>(),
+      ),
+    )
+    ..registerFactory(
+      () => CompleteRide(
+        serviceLocator<RideRepository>(),
+      ),
+    )
+    ..registerFactory(
+      () => RateRide(
+        serviceLocator<RideRepository>(),
+      ),
+    )
+    //Bloc
+    //Bloc
     //Bloc
     ..registerLazySingleton(
       () => RideMainBloc(
@@ -207,6 +233,8 @@ void _initRide() {
         cancelRide: serviceLocator<CancelRide>(),
         rideMainBloc: serviceLocator<RideMainBloc>(),
         yourRideListCubit: serviceLocator<YourRideListCubit>(),
+        startRide: serviceLocator<StartRide>(),
+        completeRide: serviceLocator<CompleteRide>(),
       ),
     )
     ..registerLazySingleton(
@@ -271,6 +299,11 @@ void _initProfile() {
         serviceLocator<ProfileRepository>(),
       ),
     )
+    ..registerFactory(
+      () => UpdateUserProfile(
+        serviceLocator<ProfileRepository>(),
+      ),
+    )
     ..registerLazySingleton(
       () => VoucherBloc(
         getUserVouchers: serviceLocator<GetUserVouchers>(),
@@ -282,6 +315,12 @@ void _initProfile() {
         createVehicle: serviceLocator<CreateVehicle>(),
         updateVehicle: serviceLocator<UpdateVehicle>(),
         deleteVehicle: serviceLocator<DeleteVehicle>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => ProfileCubit(
+        updateUserProfile: serviceLocator<UpdateUserProfile>(),
+        authBloc: serviceLocator<AuthBloc>(),
       ),
     );
 }

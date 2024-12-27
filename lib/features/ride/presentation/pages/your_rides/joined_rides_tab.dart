@@ -16,64 +16,91 @@ class JoinedRidesTab extends StatefulWidget {
   State<JoinedRidesTab> createState() => _JoinedRidesTabState();
 }
 
-class _JoinedRidesTabState extends State<JoinedRidesTab>
-    with TickerProviderStateMixin {
-  late final TabController _tabController;
+class _JoinedRidesTabState extends State<JoinedRidesTab> {
   bool _isNavigating = false;
+  int _selectedTabIndex = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
+  final List<Map<String, dynamic>> _tabs = [
+    {
+      'label': 'Confirmed',
+      'icon': Icons.event_available,
+      'color': AppPallete.primaryColor,
+    },
+    {
+      'label': 'Active',
+      'icon': Icons.event_available,
+      'color': AppPallete.activeColor,
+    },
+    {
+      'label': 'Completed',
+      'icon': Icons.check_circle_outline_outlined,
+      'color': AppPallete.completedColor,
+    },
+    {
+      'label': 'Canceled',
+      'icon': Icons.block,
+      'color': AppPallete.errorColor,
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        TabBar.secondary(
-          controller: _tabController,
-          tabs: const <Widget>[
-            Tab(
-              icon: Icon(
-                Icons.event_available,
-                color: AppPallete.activeColor,
-              ),
-              child: Text(
-                "Active",
-                style: TextStyle(color: AppPallete.activeColor),
-              ),
+        Container(
+          padding: const EdgeInsets.all(8.0),
+          child: GridView.builder(
+            shrinkWrap: true,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, // 2 columns
+              crossAxisSpacing: 8.0,
+              mainAxisSpacing: 8.0,
+              childAspectRatio: 3.0, // Adjust to control item height
             ),
-            Tab(
-              icon: Icon(
-                Icons.check_circle_outline_outlined,
-                color: AppPallete.completedColor,
-              ),
-              child: Text(
-                "Completed",
-                style: TextStyle(color: AppPallete.completedColor),
-              ),
-            ),
-            Tab(
-              icon: Icon(
-                Icons.block,
-                color: AppPallete.errorColor,
-              ),
-              child: Text(
-                "Canceled",
-                style: TextStyle(color: AppPallete.errorColor),
-              ),
-            ),
-          ],
-          indicatorColor: AppPallete.secondaryColor,
+            itemCount: _tabs.length,
+            itemBuilder: (context, index) {
+              final tab = _tabs[index];
+              final isSelected = _selectedTabIndex == index;
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedTabIndex = index;
+                  });
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? AppPallete.secondaryColor.withOpacity(0.2)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border.all(
+                      color: isSelected
+                          ? AppPallete.secondaryColor
+                          : Colors.grey.shade300,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(tab['icon'], color: tab['color']),
+                      const SizedBox(height: 4.0),
+                      Text(
+                        tab['label'],
+                        style: TextStyle(
+                          color: tab['color'],
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
         ),
         Expanded(
+          // Content for selected tab
           child: BlocConsumer<YourRideListCubit, RideListState>(
             listener: (context, state) {
               if (state is RideListFailure) {
@@ -92,27 +119,38 @@ class _JoinedRidesTabState extends State<JoinedRidesTab>
                 );
               }
               final joinRides = state.joinedRides;
-              final activeRides = joinRides
+              final confirmedRides = joinRides
                   .where((ride) => ride.status == "confirmed")
                   .toList();
+              final startedRides =
+                  joinRides.where((ride) => ride.status == "started").toList();
               final completedRides = joinRides
                   .where((ride) => ride.status == "completed")
                   .toList();
               final canceledRides =
                   joinRides.where((ride) => ride.status == 'canceled').toList();
-              return TabBarView(
-                controller: _tabController,
-                children: <Widget>[
+
+              return IndexedStack(
+                index: _selectedTabIndex,
+                children: [
                   Container(
-                    margin: const EdgeInsets.all(16.0),
-                    child: _buildRidesList(activeRides, "active"),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: _buildRidesList(confirmedRides, "confirmed"),
                   ),
                   Container(
-                    margin: const EdgeInsets.all(16.0),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: _buildRidesList(startedRides, "started"),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
                     child: _buildRidesList(completedRides, "completed"),
                   ),
                   Container(
-                    margin: const EdgeInsets.all(16.0),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
                     child: _buildRidesList(canceledRides, "canceled"),
                   ),
                 ],

@@ -239,4 +239,48 @@ class RideRepositoryImpl implements RideRepository {
       return left(Failure(e.message));
     }
   }
+
+  @override
+  Future<Either<Failure, Ride>> completeRide({required int rideId}) async {
+    try {
+      if (!await (_connectionChecker.isConnected)) {
+        return left(Failure(Constants.noConnectionErrorMessage));
+      }
+      final ride = await _rideRemoteDataSource.completeRide(rideId: rideId);
+
+      return right(ride);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> rateRide(
+      {required int rideId, required double rating}) async {
+    try {
+      if (!await (_connectionChecker.isConnected)) {
+        return left(Failure(Constants.noConnectionErrorMessage));
+      }
+      final success =
+          await _rideRemoteDataSource.rateRide(rideId: rideId, rating: rating);
+
+      return right(success);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Ride>> startRide({required int rideId}) async {
+    try {
+      if (!await (_connectionChecker.isConnected)) {
+        return left(Failure(Constants.noConnectionErrorMessage));
+      }
+      final ride = await _rideRemoteDataSource.startRide(rideId: rideId);
+
+      return right(ride);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
 }

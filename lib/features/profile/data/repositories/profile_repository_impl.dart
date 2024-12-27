@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:fpdart/fpdart.dart';
+import 'package:ride_now_app/core/common/entities/user.dart';
 import 'package:ride_now_app/core/constants/constants.dart';
 import 'package:ride_now_app/core/error/exception.dart';
 import 'package:ride_now_app/core/error/failure.dart';
@@ -114,6 +117,36 @@ class ProfileRepositoryImpl implements ProfileRepository {
       final vouchers = await _profileRemoteDataSource.getUserVouchers();
 
       return right(vouchers);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, User>> updateUserProfile({
+    String? name,
+    String? phone,
+    String? email,
+    String? oldPassword,
+    String? newPassword,
+    File? profileImage,
+  }) async {
+    try {
+      if (!await (_connectionChecker.isConnected)) {
+        return left(Failure(Constants.noConnectionErrorMessage));
+      }
+      final updatedUser = await _profileRemoteDataSource.updateUserProfile(
+        name: name,
+        phone: phone,
+        email: email,
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+        profileImage: profileImage,
+      );
+
+      return right(updatedUser);
+    } on ServerValidatorException catch (e) {
+      return left(Failure(e.message, e.errors));
     } on ServerException catch (e) {
       return left(Failure(e.message));
     }

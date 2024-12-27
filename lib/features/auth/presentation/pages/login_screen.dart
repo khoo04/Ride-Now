@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ride_now_app/core/common/widgets/app_button.dart';
 import 'package:ride_now_app/core/common/widgets/my_app_bar.dart';
 import 'package:ride_now_app/core/common/widgets/navigate_back_button.dart';
+import 'package:ride_now_app/core/theme/app_pallete.dart';
 import 'package:ride_now_app/core/utils/show_snackbar.dart';
 import 'package:ride_now_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:ride_now_app/features/auth/presentation/widgets/auth_input_field.dart';
@@ -102,6 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               _isRememberMe = value!;
                             });
                           },
+                          activeColor: AppPallete.primaryColor,
                         ),
                       ),
                       const SizedBox(

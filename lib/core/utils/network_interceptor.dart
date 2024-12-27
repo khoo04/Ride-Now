@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 
-//TODO: Plan to implement it
 class NetworkInterceptor implements Interceptor {
   @override
   void onRequest(

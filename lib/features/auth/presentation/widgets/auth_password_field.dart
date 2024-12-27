@@ -6,12 +6,14 @@ class AuthPasswordField extends StatefulWidget {
   final TextEditingController controller;
   final String? Function(String?)? validator;
   final String? errorText;
+  final void Function()? onEditingComplete;
   const AuthPasswordField({
     super.key,
     required this.controller,
     required this.labelText,
     this.validator,
     this.errorText,
+    this.onEditingComplete,
   });
 
   @override
@@ -42,6 +44,7 @@ class _AuthPasswordFieldState extends State<AuthPasswordField> {
       focusNode: _focusNode,
       controller: widget.controller,
       obscureText: isObscureText,
+      onEditingComplete: widget.onEditingComplete,
       decoration: InputDecoration(
         errorMaxLines: 5,
         errorText: widget.errorText,

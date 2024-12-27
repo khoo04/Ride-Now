@@ -35,4 +35,9 @@ class AuthIsUserLoggedIn extends AuthEvent {}
 
 class AuthRememberMeStatusChecked extends AuthEvent {}
 
+class AuthUpdateUser extends AuthEvent {
+  final User user;
+  AuthUpdateUser(this.user);
+}
+
 class AuthLogoutUser extends AuthEvent {}

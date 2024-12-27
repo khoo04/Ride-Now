@@ -8,6 +8,7 @@ class AuthInputField extends StatelessWidget {
   final void Function(String)? onChanged;
   final String? errorText;
   final TextInputType? keyboardType;
+  final void Function()? onEditingComplete;
   const AuthInputField({
     super.key,
     required this.labelText,
@@ -16,12 +17,14 @@ class AuthInputField extends StatelessWidget {
     this.onChanged,
     this.errorText,
     this.keyboardType,
+    this.onEditingComplete,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
+      onEditingComplete: onEditingComplete,
       decoration: InputDecoration(
         errorMaxLines: 5,
         floatingLabelStyle: const TextStyle(color: AppPallete.primaryColor),

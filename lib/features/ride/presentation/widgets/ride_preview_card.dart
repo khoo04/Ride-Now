@@ -11,6 +11,18 @@ class RidePreviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color priceColor;
+    switch (ride.status) {
+      case "started":
+        priceColor = AppPallete.activeColor;
+        break;
+      case "completed":
+        priceColor = Colors.red;
+        break;
+      case "confirmed":
+      default:
+        priceColor = Colors.blue;
+    }
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -150,11 +162,32 @@ class RidePreviewCard extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    CircleAvatar(
-                      radius: 24,
-                      backgroundColor: Colors.grey[300],
-                      child: const Icon(Icons.person, color: Colors.white),
-                    ),
+                    // CircleAvatar(
+                    //   radius: 24,
+                    //   backgroundColor: Colors.grey[300],
+                    //   child: const Icon(Icons.person, color: Colors.white),
+                    // ),
+                    Builder(builder: (context) {
+                      ImageProvider<Object>? imageToDisplay;
+                      final url = ride.driver.profilePicture;
+
+                      if (url != null) {
+                        imageToDisplay = NetworkImage(url);
+                      } else {
+                        imageToDisplay = null;
+                      }
+                      return CircleAvatar(
+                        backgroundColor: Colors.grey[300],
+                        radius: 24,
+                        foregroundImage: imageToDisplay,
+                        child: imageToDisplay == null
+                            ? const Icon(
+                                Icons.person,
+                                color: Colors.white,
+                              )
+                            : null,
+                      );
+                    }),
                     const SizedBox(width: 16),
                     Text(
                       ride.driver.name,
@@ -172,10 +205,10 @@ class RidePreviewCard extends StatelessWidget {
                     _buildRideSeats(ride.passengers.length, ride.vehicle.seats),
                     Text(
                       "RM ${ride.baseCost.toStringAsFixed(2)}",
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue),
+                          color: priceColor),
                     ),
                   ],
                 ),

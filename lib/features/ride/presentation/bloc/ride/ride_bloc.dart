@@ -4,8 +4,9 @@ import 'package:ride_now_app/core/usecase/usecase.dart';
 import 'package:ride_now_app/features/profile/domain/entities/voucher.dart';
 import 'package:ride_now_app/features/ride/domain/entities/ride.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/cancel_ride.dart';
+import 'package:ride_now_app/features/ride/domain/usecases/complete_ride.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/fetch_ride_by_id.dart';
-import 'package:ride_now_app/features/payment/domain/usecases/get_ride_payment_link.dart';
+import 'package:ride_now_app/features/ride/domain/usecases/start_ride.dart';
 import 'package:ride_now_app/features/ride/presentation/bloc/ride_main/ride_main_bloc.dart';
 import 'package:ride_now_app/features/ride/presentation/cubit/your_ride_list/your_ride_list_cubit.dart';
 
@@ -16,6 +17,8 @@ class RideBloc extends Bloc<RideEvent, RideState> {
   //Use Cases
   final FetchRideById _fetchRideById;
   final CancelRide _cancelRide;
+  final StartRide _startRide;
+  final CompleteRide _completeRide;
   //Bloc
   final RideMainBloc _rideMainBloc;
   //Cubits
@@ -23,10 +26,14 @@ class RideBloc extends Bloc<RideEvent, RideState> {
   RideBloc({
     required FetchRideById fetchRideById,
     required CancelRide cancelRide,
+    required StartRide startRide,
+    required CompleteRide completeRide,
     required RideMainBloc rideMainBloc,
     required YourRideListCubit yourRideListCubit,
   })  : _fetchRideById = fetchRideById,
         _cancelRide = cancelRide,
+        _startRide = startRide,
+        _completeRide = completeRide,
         _rideMainBloc = rideMainBloc,
         _yourRideListCubit = yourRideListCubit,
         super(const RideInitial()) {
@@ -34,6 +41,8 @@ class RideBloc extends Bloc<RideEvent, RideState> {
     on<SelectVoucherOnRide>(_onSelectVoucherOnRide);
     on<FetchRideDetails>(_onFetchRideById);
     on<CancelRideEvent>(_onCancelRide);
+    on<StartRideEvent>(_onStartSelectedRide);
+    on<CompleteRideEvent>(_onCompleteSelectedRide);
     on<ResetRideStateEvent>(_onResetRideBloc);
     on<UpdateSelectedRide>(_onUpdateSelectedRide);
   }
@@ -105,5 +114,37 @@ class RideBloc extends Bloc<RideEvent, RideState> {
     if (currentState.ride.rideId != event.updatedRide.rideId) return;
 
     emit(currentState.copyWith(ride: event.updatedRide));
+  }
+
+  Future<void> _onStartSelectedRide(
+      StartRideEvent event, Emitter<RideState> emit) async {
+    if (state is! RideSelected) return;
+
+    final currentState = state as RideSelected;
+
+    final ride = await _startRide(StartRideParams(rideId: event.rideId));
+
+    ride.fold((failure) {
+      emit(RideFailure(failure.message));
+      emit(currentState);
+    }, (ride) {
+      emit(currentState.copyWith(ride: ride));
+    });
+  }
+
+  Future<void> _onCompleteSelectedRide(
+      CompleteRideEvent event, Emitter<RideState> emit) async {
+    if (state is! RideSelected) return;
+
+    final currentState = state as RideSelected;
+
+    final ride = await _completeRide(CompleteRideParams(rideId: event.rideId));
+
+    ride.fold((failure) {
+      emit(RideFailure(failure.message));
+      emit(currentState);
+    }, (ride) {
+      emit(currentState.copyWith(ride: ride));
+    });
   }
 }

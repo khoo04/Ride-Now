@@ -283,11 +283,27 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                   )
                 ],
               ),
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: Colors.grey[300],
-                child: const Icon(Icons.person, color: Colors.white),
-              ),
+              Builder(builder: (context) {
+                ImageProvider<Object>? imageToDisplay;
+                final url = state.ride.driver.profilePicture;
+
+                if (url != null) {
+                  imageToDisplay = NetworkImage(url);
+                } else {
+                  imageToDisplay = null;
+                }
+                return CircleAvatar(
+                  backgroundColor: Colors.grey[300],
+                  radius: 24,
+                  foregroundImage: imageToDisplay,
+                  child: imageToDisplay == null
+                      ? const Icon(
+                          Icons.person,
+                          color: Colors.white,
+                        )
+                      : null,
+                );
+              }),
             ],
           ),
         ),
@@ -325,114 +341,122 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
           padding: const EdgeInsets.symmetric(vertical: 24.0),
           child: Builder(
             builder: (context) {
-              if (state.ride.status != "confirmed") {
-                return const SizedBox.shrink();
-              }
-              final isBefore5Minutes = DateTime.now().isBefore(state
-                  .ride.departureTime
-                  .subtract(const Duration(minutes: 5)));
-              if (isBefore5Minutes) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: state.ride.passengers.isEmpty
-                          ? () async {
-                              context
-                                  .read<RideUpdateCubit>()
-                                  .initializeUpdateRide(state.ride);
-                              Navigator.pushNamed(
-                                  context, UpdateRideScreen.routeName);
-                            }
-                          : () {
-                              showSnackBar(context,
-                                  "Unable to edit ride once passengers have joined");
-                            },
-                      icon: const Icon(Icons.edit),
-                      iconSize: 32,
-                    ),
-                    const SizedBox(
-                      width: 16,
-                    ),
-                    Expanded(
-                      child: AppButton(
-                        onPressed: () {
-                          Navigator.pushNamed(
-                              context, InAppNavigationScreen.routeName,
-                              arguments: state.ride);
-                        },
-                        child: const Text("View Route"),
+              if (state.ride.status == "confirmed") {
+                final isBefore5Minutes = DateTime.now().isBefore(state
+                    .ride.departureTime
+                    .subtract(const Duration(minutes: 5)));
+                if (isBefore5Minutes) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        onPressed: state.ride.passengers.isEmpty
+                            ? () async {
+                                context
+                                    .read<RideUpdateCubit>()
+                                    .initializeUpdateRide(state.ride);
+                                Navigator.pushNamed(
+                                    context, UpdateRideScreen.routeName);
+                              }
+                            : () {
+                                showSnackBar(context,
+                                    "Unable to edit ride once passengers have joined");
+                              },
+                        icon: const Icon(Icons.edit),
+                        iconSize: 32,
                       ),
-                    ),
-                    const SizedBox(
-                      width: 16,
-                    ),
-                    Expanded(
-                      child: CancelButton(
-                          onPressed: () async {
-                            //Cancel Ride
-                            final value =
-                                await CustomSweetAlertDialog.show<bool>(
-                              context,
-                              title: const Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.warning_amber_rounded,
-                                    color: Colors.orange,
-                                    size: 50,
-                                  ),
-                                  SizedBox(height: 10),
-                                  Text(
-                                    'Cancel Ride?',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                              content: const Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    'Are you sure you want to cancel this ride?',
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  Text(
-                                    'This action cannot be undone.',
-                                    textAlign: TextAlign.center,
-                                    style:
-                                        TextStyle(color: AppPallete.errorColor),
-                                  ),
-                                ],
-                              ),
-                              confirmValue: true,
-                              cancelValue: false,
-                            );
-
-                            if (value) {
-                              _rideBloc.add(
-                                  CancelRideEvent(rideId: state.ride.rideId));
-                            }
+                      const SizedBox(
+                        width: 16,
+                      ),
+                      Expanded(
+                        child: AppButton(
+                          onPressed: () {
+                            Navigator.pushNamed(
+                                context, InAppNavigationScreen.routeName);
                           },
-                          child: const Text("Cancel Ride")),
-                    ),
-                  ],
+                          child: const Text("View Route"),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 16,
+                      ),
+                      Expanded(
+                        child: CancelButton(
+                            onPressed: () async {
+                              //Cancel Ride
+                              final value =
+                                  await CustomSweetAlertDialog.show<bool>(
+                                context,
+                                title: const Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.warning_amber_rounded,
+                                      color: Colors.orange,
+                                      size: 50,
+                                    ),
+                                    SizedBox(height: 10),
+                                    Text(
+                                      'Cancel Ride?',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                                content: const Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'Are you sure you want to cancel this ride?',
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    Text(
+                                      'This action cannot be undone.',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          color: AppPallete.errorColor),
+                                    ),
+                                  ],
+                                ),
+                                confirmValue: true,
+                                cancelValue: false,
+                              );
+
+                              if (value) {
+                                _rideBloc.add(
+                                    CancelRideEvent(rideId: state.ride.rideId));
+                              }
+                            },
+                            child: const Text("Cancel Ride")),
+                      ),
+                    ],
+                  );
+                } else {
+                  return Center(
+                    child: state.ride.passengers.isEmpty
+                        ?
+                        //If not passengers join after 5 minutes for the departure time, user can cancel ride
+                        CancelButton(
+                            onPressed: () {
+                              //Cancel Ride
+                            },
+                            child: const Text("Cancel Ride"))
+                        : AppButton(
+                            onPressed: () {}, child: const Text("Start Ride")),
+                  );
+                }
+              } else if (state.ride.status == "started") {
+                return AppButton(
+                  onPressed: () {
+                    Navigator.pushNamed(
+                        context, InAppNavigationScreen.routeName);
+                  },
+                  child: const Text("View Route"),
                 );
               } else {
-                return Center(
-                  child: state.ride.passengers.isEmpty
-                      ?
-                      //If not passengers join after 5 minutes for the departure time, user can cancel ride
-                      CancelButton(
-                          onPressed: () {
-                            //Cancel Ride
-                          },
-                          child: const Text("Cancel Ride"))
-                      : AppButton(
-                          onPressed: () {}, child: const Text("Start Ride")),
-                );
+                return const SizedBox.shrink();
               }
             },
           ),
@@ -601,7 +625,6 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                         Icons.star,
                         size: 12,
                       ),
-                      //TODO Ratings
                       Text(
                         " ${state.ride.driver.ratings} / 5.0",
                         style: const TextStyle(
@@ -677,55 +700,6 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
           ),
         ),
         const Spacer(),
-        if (state.ride.passengers.any((passenger) => passenger.id != user.id))
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0),
-            child: Divider(),
-          ),
-        if (state.ride.passengers.any((passenger) => passenger.id != user.id))
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text.rich(
-                TextSpan(
-                  children: [
-                    const TextSpan(
-                      text: "Total price for ",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                      ),
-                    ),
-                    TextSpan(
-                      text: "${state.seats} ",
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.red, // Highlighted in red
-                      ),
-                    ),
-                    TextSpan(
-                      text: state.seats > 1 ? "passengers" : "passenger",
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Text(
-                "RM ${calculateRidePrice(baseCost: state.ride.baseCost, currentPassengersCount: state.ride.passengers.length, requiredSeats: state.seats).toStringAsFixed(2)}",
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppPallete.primaryColor,
-                ),
-              ),
-            ],
-          ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 24.0),
           child: Center(
@@ -736,8 +710,10 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
               }
               return null;
             }, builder: (context, user) {
-              if (user == null) return const SizedBox.shrink();
-              //If current time is before 5 minutes compare to ride departure time, driver cannot cancel
+              if (user == null || state.ride.status == "completed") {
+                return const SizedBox.shrink();
+              }
+              //TODO: Leave ride?
               final isBefore5Minutes = DateTime.now().isBefore(state
                   .ride.departureTime
                   .subtract(const Duration(minutes: 5)));
@@ -749,7 +725,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                     Navigator.of(context)
                         .pushNamed(InAppNavigationScreen.routeName);
                   },
-                  child: const Text("View Ride Details"),
+                  child: const Text("View ride details"),
                 );
               } else {
                 return AppButton(

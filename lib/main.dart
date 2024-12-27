@@ -15,6 +15,7 @@ import 'package:ride_now_app/features/payment/presentation/pages/payment_success
 import 'package:ride_now_app/features/payment/presentation/pages/payment_web_screen.dart';
 import 'package:ride_now_app/features/profile/presentation/bloc/vehicle/vehicle_bloc.dart';
 import 'package:ride_now_app/features/profile/presentation/bloc/voucher/voucher_bloc.dart';
+import 'package:ride_now_app/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:ride_now_app/features/profile/presentation/pages/manage_vehicles_screen.dart';
 import 'package:ride_now_app/features/profile/presentation/pages/my_voucher_screen.dart';
 import 'package:ride_now_app/features/profile/presentation/pages/register_vehicle_screen.dart';
@@ -29,6 +30,7 @@ import 'package:ride_now_app/features/ride/presentation/cubit/ride_update/ride_u
 import 'package:ride_now_app/features/ride/presentation/cubit/your_ride_list/your_ride_list_cubit.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/create_ride_success_screen.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/pick_voucher_screen.dart';
+import 'package:ride_now_app/features/ride/presentation/pages/ride_ratings_screen.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/update_ride_screen.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/in_app_navigation_screen.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/ride_detail_screen.dart';
@@ -78,6 +80,9 @@ void main() async {
     ),
     BlocProvider(
       create: (_) => serviceLocator<PaymentCubit>(),
+    ),
+    BlocProvider(
+      create: (_) => serviceLocator<ProfileCubit>(),
     ),
   ], child: const MyApp()));
 }
@@ -145,6 +150,8 @@ class _MyAppState extends State<MyApp> {
         PaymentFailedScreen.routeName: (context) => const PaymentFailedScreen(),
         PaymentSuccessScreen.routeName: (context) =>
             const PaymentSuccessScreen(),
+        //Rating
+        RideRatingsScreen.routeName: (context) => const RideRatingsScreen(),
       },
     );
   }

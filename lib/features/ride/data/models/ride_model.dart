@@ -14,6 +14,7 @@ class RideModel extends Ride {
     required super.driver,
     required super.passengers,
     required super.vehicle,
+    required super.isRated,
   });
 
   factory RideModel.fromJson(Map<String, dynamic> json) {
@@ -29,11 +30,12 @@ class RideModel extends Ride {
           .map((passengerJson) => UserModel.fromJson(passengerJson))
           .toList(),
       vehicle: VehicleModel.fromJson(json['vehicle']),
+      isRated: json['isRated'] as bool?,
     );
   }
 
   @override
   String toString() {
-    return 'RideModel(rideId: $rideId, origin: ${origin.toString()}, destination: ${destination.toString()}, departureTime: $departureTime, status: $status, baseCost: $baseCost, driver: ${driver.toString()}, passengers: ${passengers.map((p) => p.toString()).toList()}, vehicle: ${vehicle.toString()})';
+    return 'RideModel(rideId: $rideId, origin: ${origin.toString()}, destination: ${destination.toString()}, departureTime: $departureTime, status: $status, baseCost: $baseCost, driver: ${driver.toString()}, passengers: ${passengers.map((p) => p.toString()).toList()}, vehicle: ${vehicle.toString()}, isRated: $isRated)';
   }
 }

@@ -37,10 +37,31 @@ class ProfileScreen extends StatelessWidget {
                   //   backgroundImage:
                   //       AssetImage("assets/images/profile_placeholder.png"),
                   // ),
-                  const CircleAvatar(
-                    radius: 45,
-                    backgroundImage: NetworkImage(
-                        "https://t3.ftcdn.net/jpg/02/43/12/34/360_F_243123463_zTooub557xEWABDLk0jJklDyLSGl2jrr.jpg"),
+                  Builder(
+                    builder: (context) {
+                      final url = state is AppUserLoggedIn
+                          ? state.user.profilePicture
+                          : null;
+                      ImageProvider<Object>? imageToDisplay;
+
+                      if (url != null) {
+                        imageToDisplay = NetworkImage(url);
+                      } else {
+                        imageToDisplay = null;
+                      }
+                      return CircleAvatar(
+                        backgroundColor: Colors.grey[300],
+                        radius: 45,
+                        foregroundImage: imageToDisplay,
+                        child: imageToDisplay == null
+                            ? const Icon(
+                                Icons.person,
+                                color: Colors.white,
+                                size: 64,
+                              )
+                            : null,
+                      );
+                    },
                   ),
                   const SizedBox(
                     height: 20,
@@ -95,14 +116,14 @@ class ProfileScreen extends StatelessWidget {
                       title: "Manage Vehicles",
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 25),
-                    child: ProfileActionTile(
-                      icon: Icons.settings,
-                      onTap: () {},
-                      title: "Settings",
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.only(bottom: 25),
+                  //   child: ProfileActionTile(
+                  //     icon: Icons.settings,
+                  //     onTap: () {},
+                  //     title: "Settings",
+                  //   ),
+                  // ),
 
                   const Spacer(flex: 2),
                 ],

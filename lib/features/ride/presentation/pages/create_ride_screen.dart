@@ -214,7 +214,6 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                               controller: dateTimeController,
                               readOnly: true,
                               onTap: () async {
-                                //TODO: Iff the date time is picked, start with the picked date time
                                 final result = await showBoardDateTimePicker(
                                   context: context,
                                   pickerType: DateTimePickerType.datetime,

@@ -60,7 +60,7 @@ class _MyVoucherScreenState extends State<MyVoucherScreen> {
               final indexOfLastItem = numOfItem - 1;
               return state.vouchers.isEmpty
                   ? const Center(
-                      child: Text("No Vehicles Founded"),
+                      child: Text("No Vouchers Founded"),
                     )
                   : ListView.separated(
                       itemBuilder: (context, index) {

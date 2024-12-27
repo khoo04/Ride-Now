@@ -1,6 +1,7 @@
 class ApiRoutes {
   // static const baseUrl = "http://10.0.2.2:8000/api/RideNowV1";
-  static const baseUrl = "https://khoodev.us.kg";
+  static const baseUrl = "https://khoodev.blog";
+  //static const baseUrl = "http://192.168.0.162:8000";
   static const apiBaseUrl = "$baseUrl/api/RideNowV1";
 
   //Stagging
@@ -53,6 +54,16 @@ class ApiRoutes {
   /// GET User Created Rides
   static const createdRides = "$apiBaseUrl/ride/createdRides";
 
+  /// Route to Start Ride
+  /// Method: POST
+  /// E.g: start/{ride_id}
+  static const startRide = "$apiBaseUrl/ride/start";
+
+  /// Route to Complete Ride
+  /// Method: POST
+  /// E.g: complete/{ride_id}
+  static const completeRide = "$apiBaseUrl/ride/complete";
+
   //Ride - Passenger Route
   ///Route to Join Ride
   ///
@@ -60,6 +71,13 @@ class ApiRoutes {
   ///
   /// E.g: join/{ride_id}
   static const joinRide = "$apiBaseUrl/ride/join";
+
+  ///Route to Rate Ride
+  ///
+  /// Method: POST
+  ///
+  /// E.g.: rate/{ride_id}
+  static const rateRide = "$apiBaseUrl/ride/rate";
 
   ///Route to Search Ride
   ///
@@ -81,6 +99,10 @@ class ApiRoutes {
   ///Route to get users vouchers
   /// Method: GET
   static const vouchers = "$profile/vouchers";
+
+  ///Route to update user profile
+  ///Method: POST
+  static const updateProfile = "$profile/update";
 
   static const autoCompleteApiRoute =
       "https://maps.googleapis.com/maps/api/place/autocomplete/json";

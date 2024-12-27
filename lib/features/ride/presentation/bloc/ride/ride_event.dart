@@ -33,3 +33,23 @@ class UpdateSelectedRide extends RideEvent {
   final Ride updatedRide;
   UpdateSelectedRide(this.updatedRide);
 }
+
+
+class StartRideEvent extends RideEvent {
+  final int rideId;
+  StartRideEvent(this.rideId);
+}
+
+class CompleteRideEvent extends RideEvent {
+  final int rideId;
+  CompleteRideEvent(this.rideId);
+}
+
+class RateRideEvent extends RideEvent {
+  final int rideId;
+  final double rating;
+  RateRideEvent({
+    required this.rideId,
+    required this.rating,
+  });
+}

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:ride_now_app/core/constants/api_routes.dart';
@@ -5,6 +7,7 @@ import 'package:ride_now_app/core/constants/constants.dart';
 import 'package:ride_now_app/core/error/exception.dart';
 import 'package:ride_now_app/core/network/app_response.dart';
 import 'package:ride_now_app/core/network/network_client.dart';
+import 'package:ride_now_app/features/auth/data/models/user_model.dart';
 import 'package:ride_now_app/features/profile/data/models/voucher_model.dart';
 import 'package:ride_now_app/features/profile/domain/entities/voucher.dart';
 import 'package:ride_now_app/features/ride/data/models/vehicle_model.dart';
@@ -33,6 +36,14 @@ abstract interface class ProfileRemoteDataSource {
   Future<bool> deleteVehicle({required int vehicleId});
 
   Future<List<VoucherModel>> getUserVouchers();
+
+  Future<UserModel> updateUserProfile(
+      {String? name,
+      String? phone,
+      String? email,
+      String? oldPassword,
+      String? newPassword,
+      File? profileImage});
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
@@ -208,6 +219,78 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
         throw const ServerException(Constants.connectionTimeout);
       }
       throw ServerException(e.message!);
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<UserModel> updateUserProfile({
+    String? name,
+    String? phone,
+    String? email,
+    String? oldPassword,
+    String? newPassword,
+    File? profileImage,
+  }) async {
+    final token = await _flutterSecureStorage.read(key: "access_token");
+
+    Map<String, dynamic> body = {};
+    if (name != null) {
+      body.addAll({
+        "name": name,
+      });
+    }
+
+    if (profileImage != null) {
+      body.addAll({
+        "profile_picture": await MultipartFile.fromFile(profileImage.path,
+            filename: profileImage.path.split('/').last)
+      });
+    }
+
+    if (newPassword != null && oldPassword != null) {
+      body.addAll({
+        "new_password": newPassword,
+        "old_password": oldPassword,
+      });
+    }
+
+    if (email != null) {
+      body.addAll({
+        "email": email,
+      });
+    }
+
+    if (phone != null) {
+      body.addAll({
+        "phone_number": phone,
+      });
+    }
+
+    FormData formData = FormData.fromMap(body);
+
+    try {
+      final response = await _networkClient.invoke(
+          ApiRoutes.updateProfile, RequestType.post,
+          headers: {"Authorization": "Bearer $token"}, requestBody: formData);
+
+      final appResponse = AppResponse.fromJson(response.data);
+
+      if (response.statusCode == 200) {
+        return UserModel.fromJson(appResponse.data);
+      } else {
+        throw ServerValidatorException.fromJson(response.data);
+      }
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout) {
+        throw const ServerException(Constants.connectionTimeout);
+      }
+      throw ServerException(e.message!);
+    } on ServerValidatorException {
+      rethrow;
+    } on ServerException {
+      rethrow;
     } catch (e) {
       throw ServerException(e.toString());
     }

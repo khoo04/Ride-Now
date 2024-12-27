@@ -19,6 +19,7 @@ import 'package:ride_now_app/features/ride/presentation/bloc/ride_main/ride_main
 import 'package:ride_now_app/features/ride/presentation/cubit/your_ride_list/your_ride_list_cubit.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/create_ride_screen.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/ride_main_screen.dart';
+import 'package:ride_now_app/features/ride/presentation/pages/ride_ratings_screen.dart';
 
 import 'package:ride_now_app/features/ride/presentation/pages/your_rides/your_ride_main_screen.dart';
 import 'package:ride_now_app/init_dependencies.dart';
@@ -70,9 +71,35 @@ class _AppFrameState extends State<AppFrame> {
         onEvent: (PusherEvent event) {
           final Map<String, dynamic> decodedData = json.decode(event.data);
 
-          if (event.eventName == 'ride.status.changed') {
+          if (event.eventName == 'joinedRide.status.started') {
             final appResponse = AppResponse.fromJson(decodedData);
-            eLog(appResponse);
+
+            if (appResponse.success) {
+              final updatedRide = RideModel.fromJson(appResponse.data);
+              context.read<YourRideListCubit>().updateRideInList(updatedRide);
+              context
+                  .read<RideMainBloc>()
+                  .add(UpdateSpecificRideInList(ride: updatedRide));
+              context.read<RideBloc>().add(UpdateSelectedRide(updatedRide));
+            }
+          } else if (event.eventName == 'joinedRide.status.completed') {
+            //Complete ride
+            final appResponse = AppResponse.fromJson(decodedData);
+
+            if (appResponse.success) {
+              final updatedRide = RideModel.fromJson(appResponse.data);
+              context.read<YourRideListCubit>().updateRideInList(updatedRide);
+              context
+                  .read<RideMainBloc>()
+                  .add(UpdateSpecificRideInList(ride: updatedRide));
+
+              //Select this ride
+              context.read<RideBloc>().add(SelectRideEvent(ride: updatedRide));
+              Navigator.of(context).pushNamed(RideRatingsScreen.routeName);
+            }
+          } else if (event.eventName == 'ride.status.changed') {
+            final appResponse = AppResponse.fromJson(decodedData);
+
             if (appResponse.success) {
               final updatedRide = RideModel.fromJson(appResponse.data);
               context.read<YourRideListCubit>().updateRideInList(updatedRide);

@@ -11,6 +11,7 @@ class Ride {
   final double baseCost;
   final List<User> passengers;
   final User driver;
+  final bool? isRated;
   final Vehicle vehicle;
 
   Ride({
@@ -22,6 +23,7 @@ class Ride {
     required this.baseCost,
     required this.driver,
     required this.passengers,
+    required this.isRated,
     required this.vehicle,
   });
 }

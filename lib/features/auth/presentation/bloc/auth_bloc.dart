@@ -45,6 +45,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthLogoutUser>(_onLogoutUser);
     on<AuthRegisterUser>(_onRegisterUser);
     on<AuthRememberMeStatusChecked>(_onRememberMeStatusChecked);
+    on<AuthUpdateUser>(_onAuthUpdateUser);
   }
 
   _onAuthLogin(AuthLogin event, Emitter<AuthState> emit) async {
@@ -114,6 +115,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
       (r) => _emitAuthSuccess(r, emit),
     );
+  }
+
+  void _onAuthUpdateUser(AuthUpdateUser event, Emitter<AuthState> emit) {
+    _emitAuthSuccess(event.user, emit);
   }
 
   void _emitAuthSuccess(User user, Emitter<AuthState> emit) {
