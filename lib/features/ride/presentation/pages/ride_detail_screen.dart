@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:ride_now_app/core/common/entities/user.dart';
 import 'package:ride_now_app/core/common/widgets/app_button.dart';
@@ -219,8 +221,49 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            _buildRideSeats(state.ride.passengers.length,
-                                state.ride.vehicle.seats),
+                            Builder(builder: (context) {
+                              if (state.ride.vehicle.seats > 8) {
+                                return AutoSizeText.rich(
+                                  TextSpan(
+                                    text: "Total Seats: ",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppPallete.secondaryColor,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: '${state.ride.vehicle.seats}\n',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: "Available Seats: ",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: AppPallete.secondaryColor,
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text:
+                                                '${state.ride.vehicle.seats - state.ride.passengers.length}',
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+
+                              return _buildRideSeats(
+                                  state.ride.passengers.length,
+                                  state.ride.vehicle.seats);
+                            }),
                             const Spacer(),
                             Text(
                               state.ride.destination.name,
@@ -374,7 +417,11 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                             Navigator.pushNamed(
                                 context, InAppNavigationScreen.routeName);
                           },
-                          child: const Text("View Route"),
+                          child: const AutoSizeText(
+                            "View Route",
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                          ),
                         ),
                       ),
                       const SizedBox(
@@ -382,7 +429,69 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                       ),
                       Expanded(
                         child: CancelButton(
+                          onPressed: () async {
+                            //Cancel Ride
+                            final value =
+                                await CustomSweetAlertDialog.show<bool>(
+                              context,
+                              title: const Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.warning_amber_rounded,
+                                    color: Colors.orange,
+                                    size: 50,
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    'Cancel Ride?',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                              content: const Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Are you sure you want to cancel this ride?',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  Text(
+                                    'This action cannot be undone.',
+                                    textAlign: TextAlign.center,
+                                    style:
+                                        TextStyle(color: AppPallete.errorColor),
+                                  ),
+                                ],
+                              ),
+                              confirmValue: true,
+                              cancelValue: false,
+                            );
+
+                            if (value) {
+                              _rideBloc.add(
+                                  CancelRideEvent(rideId: state.ride.rideId));
+                            }
+                          },
+                          child: const AutoSizeText(
+                            "Cancel Ride",
+                            maxLines: 1,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                } else {
+                  return Center(
+                    child: state.ride.passengers.isEmpty
+                        ?
+                        //If not passengers join after 5 minutes for the departure time, user can cancel ride
+                        CancelButton(
                             onPressed: () async {
+                              //Cancel Ride
                               //Cancel Ride
                               final value =
                                   await CustomSweetAlertDialog.show<bool>(
@@ -429,22 +538,21 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                                     CancelRideEvent(rideId: state.ride.rideId));
                               }
                             },
-                            child: const Text("Cancel Ride")),
-                      ),
-                    ],
-                  );
-                } else {
-                  return Center(
-                    child: state.ride.passengers.isEmpty
-                        ?
-                        //If not passengers join after 5 minutes for the departure time, user can cancel ride
-                        CancelButton(
-                            onPressed: () {
-                              //Cancel Ride
-                            },
-                            child: const Text("Cancel Ride"))
+                            child: const AutoSizeText(
+                              "Cancel Ride",
+                              maxLines: 1,
+                            ),
+                          )
                         : AppButton(
-                            onPressed: () {}, child: const Text("Start Ride")),
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                  context, InAppNavigationScreen.routeName);
+                            },
+                            child: const AutoSizeText(
+                              "Start Ride",
+                              maxLines: 1,
+                            ),
+                          ),
                   );
                 }
               } else if (state.ride.status == "started") {
@@ -453,7 +561,10 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                     Navigator.pushNamed(
                         context, InAppNavigationScreen.routeName);
                   },
-                  child: const Text("View Route"),
+                  child: const Text(
+                    "View Route",
+                    textAlign: TextAlign.center,
+                  ),
                 );
               } else {
                 return const SizedBox.shrink();
@@ -466,6 +577,8 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
   }
 
   Column _passengersView(RideSelected state, BuildContext context, User user) {
+    int availableSeats =
+        state.ride.vehicle.seats - state.ride.passengers.length;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -573,8 +686,49 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            _buildRideSeats(state.ride.passengers.length,
-                                state.ride.vehicle.seats),
+                            Builder(builder: (context) {
+                              if (state.ride.vehicle.seats > 8) {
+                                return AutoSizeText.rich(
+                                  TextSpan(
+                                    text: "Total Seats: ",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppPallete.secondaryColor,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: '${state.ride.vehicle.seats}\n',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: "Available Seats: ",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: AppPallete.secondaryColor,
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text:
+                                                '${state.ride.vehicle.seats - state.ride.passengers.length}',
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+
+                              return _buildRideSeats(
+                                  state.ride.passengers.length,
+                                  state.ride.vehicle.seats);
+                            }),
                             const Spacer(),
                             Text(
                               state.ride.destination.name,
@@ -728,119 +882,173 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                   child: const Text("View ride details"),
                 );
               } else {
-                return AppButton(
-                  onPressed: () {
-                    //Join ride
-                    showModalBottomSheet(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return Container(
-                            height: 350,
-                            width: MediaQuery.of(context).size.width,
-                            margin: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Pricing Details',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 18,
-                                    color: AppPallete.primaryColor,
-                                  ),
-                                ),
-                                const Divider(),
-                                Expanded(
-                                  child: _renderPricingDetails(state),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 8),
+                return Row(
+                  children: [
+                    SizedBox(
+                      width: 120,
+                      child: SpinBox(
+                        readOnly: true,
+                        min: 1,
+                        max: availableSeats.toDouble(),
+                        decoration: const InputDecoration(
+                          label: AutoSizeText(
+                            "Required Seats",
+                            maxLines: 1,
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: AppPallete.primaryColor,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: AppPallete.primaryColor,
+                            ),
+                          ),
+                        ),
+                        value: state.seats.toDouble(),
+                        onChanged: (value) {
+                          if (value <= availableSeats) {
+                            _rideBloc.add(
+                                UpdateRideRequireSeatsEvent(value.toInt()));
+                          } else {
+                            showSnackBar(context, "Exceed available seats");
+                          }
+                        },
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 16,
+                    ),
+                    Expanded(
+                      child: AppButton(
+                        onPressed: () {
+                          //Join ride
+                          showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Container(
+                                  height: 350,
+                                  width: MediaQuery.of(context).size.width,
+                                  margin: const EdgeInsets.all(16.0),
                                   child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      InkWell(
-                                        onTap: () {
-                                          Navigator.of(context).pushNamed(
-                                              PickVoucherScreen.routeName);
-                                        },
-                                        child: const Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 8.0),
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons.redeem,
-                                                color: AppPallete.primaryColor,
-                                              ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              Text(
-                                                "Apply Voucher",
-                                                style: TextStyle(
-                                                    color: AppPallete
-                                                        .primaryColor),
-                                              ),
-                                              Spacer(),
-                                              Icon(Icons.chevron_right),
-                                            ],
-                                          ),
+                                      const Text(
+                                        'Pricing Details',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 18,
+                                          color: AppPallete.primaryColor,
                                         ),
                                       ),
-                                      const SizedBox(
-                                        height: 8,
+                                      const Divider(),
+                                      Expanded(
+                                        child: _renderPricingDetails(state),
                                       ),
-                                      Center(
-                                        child: AppButton(
-                                            onPressed: () {
-                                              final paymentAmount =
-                                                  calculateRidePrice(
-                                                      baseCost:
-                                                          state.ride.baseCost,
-                                                      currentPassengersCount:
-                                                          state.ride.passengers
-                                                              .length,
-                                                      requiredSeats:
-                                                          state.seats);
-                                              context
-                                                  .read<PaymentCubit>()
-                                                  .initializePayment(
-                                                    rideId: state.ride.rideId,
-                                                    paymentAmount:
-                                                        paymentAmount,
-                                                    requiredSeats: state.seats,
-                                                  )
-                                                  .then((paymentState) {
-                                                if (context.mounted) {
-                                                  if (paymentState
-                                                      is PaymentInitSuccess) {
-                                                    Navigator.of(context)
-                                                        .pushNamed(
-                                                      PaymentWebScreen
-                                                          .routeName,
-                                                    );
-                                                  } else if (paymentState
-                                                      is PaymentInitFailed) {
-                                                    showSnackBar(
-                                                      context,
-                                                      paymentState.message,
-                                                    );
-                                                  }
-                                                }
-                                              });
-                                            },
-                                            child: const Text("Join ride")),
-                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 8),
+                                        child: Column(
+                                          children: [
+                                            InkWell(
+                                              onTap: () {
+                                                Navigator.of(context).pushNamed(
+                                                    PickVoucherScreen
+                                                        .routeName);
+                                              },
+                                              child: const Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 8.0),
+                                                child: Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.redeem,
+                                                      color: AppPallete
+                                                          .primaryColor,
+                                                    ),
+                                                    SizedBox(
+                                                      width: 10,
+                                                    ),
+                                                    Text(
+                                                      "Apply Voucher",
+                                                      style: TextStyle(
+                                                          color: AppPallete
+                                                              .primaryColor),
+                                                    ),
+                                                    Spacer(),
+                                                    Icon(Icons.chevron_right),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 8,
+                                            ),
+                                            Center(
+                                              child: AppButton(
+                                                  onPressed: () {
+                                                    final paymentAmount =
+                                                        calculateRidePrice(
+                                                            baseCost: state
+                                                                .ride.baseCost,
+                                                            currentPassengersCount:
+                                                                state
+                                                                    .ride
+                                                                    .passengers
+                                                                    .length,
+                                                            requiredSeats:
+                                                                state.seats);
+                                                    context
+                                                        .read<PaymentCubit>()
+                                                        .initializePayment(
+                                                          rideId:
+                                                              state.ride.rideId,
+                                                          paymentAmount:
+                                                              paymentAmount,
+                                                          requiredSeats:
+                                                              state.seats,
+                                                        )
+                                                        .then((paymentState) {
+                                                      if (context.mounted) {
+                                                        if (paymentState
+                                                            is PaymentInitSuccess) {
+                                                          Navigator.of(context)
+                                                              .pushNamed(
+                                                            PaymentWebScreen
+                                                                .routeName,
+                                                          );
+                                                        } else if (paymentState
+                                                            is PaymentInitFailed) {
+                                                          showSnackBar(
+                                                            context,
+                                                            paymentState
+                                                                .message,
+                                                          );
+                                                        }
+                                                      }
+                                                    });
+                                                  },
+                                                  child:
+                                                      const Text("Join ride")),
+                                            ),
+                                          ],
+                                        ),
+                                      )
                                     ],
                                   ),
-                                )
-                              ],
-                            ),
-                          );
-                        });
-                  },
-                  child: const Text("View pricing details"),
+                                );
+                              });
+                        },
+                        child: const AutoSizeText(
+                          "View pricing details",
+                          maxLines: 1,
+                        ),
+                      ),
+                    ),
+                  ],
                 );
               }
             }),

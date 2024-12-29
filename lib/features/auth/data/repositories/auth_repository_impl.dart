@@ -5,7 +5,6 @@ import 'package:ride_now_app/core/constants/constants.dart';
 import 'package:ride_now_app/core/error/exception.dart';
 import 'package:ride_now_app/core/error/failure.dart';
 import 'package:ride_now_app/core/network/connection_checker.dart';
-import 'package:ride_now_app/core/utils/logger.dart';
 import 'package:ride_now_app/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:ride_now_app/features/auth/domain/repositories/auth_repository.dart';
 
@@ -39,7 +38,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, User>> getCurrentUser() async {
     final isRemember = await _flutterSecureStorage.read(key: "isRemember");
     try {
-      if (isRemember == null || isRemember == "false") {
+      if (isRemember == "false") {
         return left(Failure(Constants.sessionExpired));
       }
       if (!await (_connectionChecker.isConnected)) {
@@ -117,9 +116,10 @@ class AuthRepositoryImpl implements AuthRepository {
       return left(Failure(e.message));
     }
   }
-  
+
   @override
-  Future<Either<Failure, String>> getBroadcastingAuthToken({required String channelName, required String socketId})  async {
+  Future<Either<Failure, String>> getBroadcastingAuthToken(
+      {required String channelName, required String socketId}) async {
     try {
       if (!await (_connectionChecker.isConnected)) {
         return left(Failure(Constants.noConnectionErrorMessage));

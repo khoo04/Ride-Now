@@ -40,4 +40,6 @@ class AuthUpdateUser extends AuthEvent {
   AuthUpdateUser(this.user);
 }
 
+class AuthUserSessionExpired extends AuthEvent {}
+
 class AuthLogoutUser extends AuthEvent {}

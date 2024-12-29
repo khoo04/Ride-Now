@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:ride_now_app/core/theme/app_pallete.dart';
 import 'package:ride_now_app/core/utils/format_date.dart';
@@ -17,7 +18,7 @@ class RidePreviewCard extends StatelessWidget {
         priceColor = AppPallete.activeColor;
         break;
       case "completed":
-        priceColor = Colors.red;
+        priceColor = Colors.green;
         break;
       case "confirmed":
       default:
@@ -162,11 +163,6 @@ class RidePreviewCard extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    // CircleAvatar(
-                    //   radius: 24,
-                    //   backgroundColor: Colors.grey[300],
-                    //   child: const Icon(Icons.person, color: Colors.white),
-                    // ),
                     Builder(builder: (context) {
                       ImageProvider<Object>? imageToDisplay;
                       final url = ride.driver.profilePicture;
@@ -202,7 +198,32 @@ class RidePreviewCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildRideSeats(ride.passengers.length, ride.vehicle.seats),
+                    Expanded(
+                      child: Builder(builder: (context) {
+                        if (ride.vehicle.seats > 8) {
+                          return AutoSizeText.rich(
+                            TextSpan(
+                                text: "Available Seats: ",
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppPallete.secondaryColor,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text:
+                                        '${ride.vehicle.seats - ride.passengers.length}',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ]),
+                          );
+                        }
+                        return _buildRideSeats(
+                            ride.passengers.length, ride.vehicle.seats);
+                      }),
+                    ),
                     Text(
                       "RM ${ride.baseCost.toStringAsFixed(2)}",
                       style: TextStyle(

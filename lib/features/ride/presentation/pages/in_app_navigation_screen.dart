@@ -219,7 +219,7 @@ class _InAppNavigationScreenState extends State<InAppNavigationScreen> {
                           builder: (context, currentPosition, _) {
                             return GoogleMap(
                               onMapCreated: (GoogleMapController controller) {
-                                //_controller.complete(controller);
+                                _controller.complete(controller);
                               },
                               initialCameraPosition: CameraPosition(
                                 target: LatLng(ride.origin.latitude,

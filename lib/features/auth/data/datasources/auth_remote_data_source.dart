@@ -47,9 +47,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           "password": password,
         },
       );
-
+      final mappedResponse = AuthResponse.fromJson(response.data);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final mappedResponse = AuthResponse.fromJson(response.data);
         //Remember user login token or not
         if (isRemember) {
           await _flutterSecureStorage.write(key: "isRemember", value: "true");
@@ -65,15 +64,18 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
         return UserModel.fromJson(mappedResponse.data);
       } else {
-        throw ServerException(response.statusMessage!);
+        throw ServerException(
+            mappedResponse.message ?? "Auth exception occured");
       }
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout) {
         throw const ServerException(Constants.connectionTimeout);
       }
       throw ServerException(e.message!);
-    } on ServerException catch (e) {
-      throw ServerException(e.message);
+    } on ServerException {
+      rethrow;
+    } catch (e) {
+      throw ServerException(e.toString());
     }
   }
 

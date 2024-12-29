@@ -16,7 +16,7 @@ class UserModel extends User {
       email: map["email"],
       phone: map["telno"],
       profilePicture: map["profile_picture"],
-      ratings: map["ratings"] ?? 0,
+      ratings: (map['ratings'] as num?)?.toDouble() ?? 0,
     );
   }
 

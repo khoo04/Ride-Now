@@ -11,7 +11,7 @@ class VoucherModel extends Voucher {
   factory VoucherModel.fromJson(Map<String, dynamic> json) {
     return VoucherModel(
       voucherId: json["voucher_id"],
-      amount: json["amount"],
+      amount: (json["amount"] as num).toDouble(),
       redeemed: json["redeemed"],
       createdAt: DateTime.parse(json["created_at"]),
     );

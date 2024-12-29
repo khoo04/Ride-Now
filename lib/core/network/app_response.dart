@@ -19,8 +19,8 @@ class AppResponse {
 
   factory AppResponse.fromJson(Map<String, dynamic> map) {
     return AppResponse(
-      success: map['success'] as bool,
-      message: map['message'] as String,
+      success: map['success'] ?? false,
+      message: map['message'] ?? "Exception occured",
       data: map['data'],
     );
   }

@@ -106,6 +106,8 @@ class RideRemoteDataSourceImpl implements RideRemoteDataSource {
         throw const ServerException(Constants.connectionTimeout);
       }
       throw ServerException(e.message!);
+    } on ServerException {
+      rethrow;
     } catch (e) {
       throw ServerException(e.toString());
     }
@@ -248,6 +250,8 @@ class RideRemoteDataSourceImpl implements RideRemoteDataSource {
         throw const ServerException(Constants.connectionTimeout);
       }
       throw ServerException(e.message!);
+    } on ServerException {
+      rethrow;
     } catch (e) {
       throw ServerException(e.toString());
     }
@@ -276,6 +280,8 @@ class RideRemoteDataSourceImpl implements RideRemoteDataSource {
         throw const ServerException(Constants.connectionTimeout);
       }
       throw ServerException(e.message!);
+    } on ServerException {
+      rethrow;
     } catch (e) {
       throw ServerException(e.toString());
     }
@@ -328,6 +334,8 @@ class RideRemoteDataSourceImpl implements RideRemoteDataSource {
         throw const ServerException(Constants.connectionTimeout);
       }
       throw ServerException(e.message!);
+    } on ServerException {
+      rethrow;
     } catch (e) {
       throw ServerException(e.toString());
     }

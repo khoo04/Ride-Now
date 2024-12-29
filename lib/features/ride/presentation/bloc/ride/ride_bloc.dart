@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:ride_now_app/core/usecase/usecase.dart';
 import 'package:ride_now_app/features/profile/domain/entities/voucher.dart';
 import 'package:ride_now_app/features/ride/domain/entities/ride.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/cancel_ride.dart';
@@ -45,6 +44,7 @@ class RideBloc extends Bloc<RideEvent, RideState> {
     on<CompleteRideEvent>(_onCompleteSelectedRide);
     on<ResetRideStateEvent>(_onResetRideBloc);
     on<UpdateSelectedRide>(_onUpdateSelectedRide);
+    on<UpdateRideRequireSeatsEvent>(_onUpdateRideRequireSeatsEvent);
   }
 
   void _onSelectRide(SelectRideEvent event, Emitter<RideState> emit) {
@@ -146,5 +146,14 @@ class RideBloc extends Bloc<RideEvent, RideState> {
     }, (ride) {
       emit(currentState.copyWith(ride: ride));
     });
+  }
+
+  void _onUpdateRideRequireSeatsEvent(
+      UpdateRideRequireSeatsEvent event, Emitter<RideState> emit) {
+    if (state is! RideSelected) return;
+
+    final currentState = state as RideSelected;
+
+    emit(currentState.copyWith(seats: event.seats));
   }
 }

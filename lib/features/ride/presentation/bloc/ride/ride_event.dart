@@ -19,6 +19,11 @@ class CancelRideEvent extends RideEvent {
   CancelRideEvent({required this.rideId});
 }
 
+class UpdateRideRequireSeatsEvent extends RideEvent {
+  final int seats;
+  UpdateRideRequireSeatsEvent(this.seats);
+}
+
 class SelectVoucherOnRide extends RideEvent {
   final Voucher voucher;
   SelectVoucherOnRide({required this.voucher});
@@ -33,7 +38,6 @@ class UpdateSelectedRide extends RideEvent {
   final Ride updatedRide;
   UpdateSelectedRide(this.updatedRide);
 }
-
 
 class StartRideEvent extends RideEvent {
   final int rideId;

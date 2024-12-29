@@ -32,7 +32,7 @@ class VoucherCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 20),
                 child: Text(
-                  "RM ${voucher.amount}",
+                  "RM ${voucher.amount.toStringAsFixed(2)}",
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w600,

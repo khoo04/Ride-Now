@@ -1,8 +1,8 @@
 class AuthResponse {
-  final bool success;
-  final String message;
+  final bool? success;
+  final String? message;
   final dynamic data;
-  final String accessToken;
+  final String? accessToken;
 
   AuthResponse({
     required this.success,
@@ -22,10 +22,10 @@ class AuthResponse {
 
   factory AuthResponse.fromJson(Map<String, dynamic> map) {
     return AuthResponse(
-      success: map['success'] as bool,
-      message: map['message'] as String,
+      success: map['success'] as bool?,
+      message: map['message'] as String?,
       data: map['data'],
-      accessToken: map['access_token'] as String,
+      accessToken: map['access_token'] as String?,
     );
   }
 }

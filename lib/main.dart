@@ -4,14 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:ride_now_app/core/common/app_wrapper.dart';
 import 'package:ride_now_app/core/cubits/app_user/app_user_cubit.dart';
+import 'package:ride_now_app/core/theme/app_pallete.dart';
 import 'package:ride_now_app/core/theme/theme.dart';
 import 'package:ride_now_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:ride_now_app/features/auth/presentation/pages/login_screen.dart';
 import 'package:ride_now_app/features/auth/presentation/pages/register_screen.dart';
 import 'package:ride_now_app/features/payment/presentation/cubit/payment_cubit.dart';
-import 'package:ride_now_app/features/payment/presentation/pages/payment_failed_screen.dart';
 import 'package:ride_now_app/features/payment/presentation/pages/payment_result_screen.dart';
-import 'package:ride_now_app/features/payment/presentation/pages/payment_success_screen.dart';
 import 'package:ride_now_app/features/payment/presentation/pages/payment_web_screen.dart';
 import 'package:ride_now_app/features/profile/presentation/bloc/vehicle/vehicle_bloc.dart';
 import 'package:ride_now_app/features/profile/presentation/bloc/voucher/voucher_bloc.dart';
@@ -113,7 +112,17 @@ class _MyAppState extends State<MyApp> {
       title: 'Ride Now',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightThemeMode,
-      home: const LoaderOverlay(child: AppWrapper()),
+      home: LoaderOverlay(
+        disableBackButton: false,
+        overlayWidgetBuilder: (_) {
+          return const Center(
+            child: CircularProgressIndicator(
+              color: AppPallete.primaryColor,
+            ),
+          );
+        },
+        child: const AppWrapper(),
+      ),
       routes: {
         //Auth
         LoginScreen.routeName: (context) => const LoginScreen(),
@@ -147,9 +156,6 @@ class _MyAppState extends State<MyApp> {
         //Payment
         PaymentWebScreen.routeName: (context) => const PaymentWebScreen(),
         PaymentResultScreen.routeName: (context) => const PaymentResultScreen(),
-        PaymentFailedScreen.routeName: (context) => const PaymentFailedScreen(),
-        PaymentSuccessScreen.routeName: (context) =>
-            const PaymentSuccessScreen(),
         //Rating
         RideRatingsScreen.routeName: (context) => const RideRatingsScreen(),
       },

@@ -36,6 +36,19 @@ void _initUtils() {
     ),
   );
 
+  dio.interceptors.add(
+    InterceptorsWrapper(
+      onResponse: (response, handler) {
+        if (response.statusCode == 401 &&
+            response.data["message"] == "Unauthenticted") {
+          // Perform logout logic
+          serviceLocator<AuthBloc>().add(AuthUserSessionExpired());
+        }
+        return handler.next(response); // Continue with the response
+      },
+    ),
+  );
+
   serviceLocator
     ..registerSingleton<NetworkClient>(
       NetworkClient(dio),

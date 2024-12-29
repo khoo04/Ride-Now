@@ -197,6 +197,18 @@ class _SearchRideScreenState extends State<SearchRideScreen> {
                       child: SpinBox(
                         readOnly: true,
                         min: 1,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: AppPallete.primaryColor,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: AppPallete.primaryColor,
+                            ),
+                          ),
+                        ),
                         value: seats.toDouble(),
                         onChanged: (value) {
                           _rideSearchBloc

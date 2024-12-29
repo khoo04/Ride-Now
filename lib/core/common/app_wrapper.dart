@@ -4,8 +4,6 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:ride_now_app/core/common/app_frame.dart';
 import 'package:ride_now_app/core/common/entities/user.dart';
 import 'package:ride_now_app/core/cubits/app_user/app_user_cubit.dart';
-import 'package:ride_now_app/core/utils/logger.dart';
-import 'package:ride_now_app/core/utils/show_snackbar.dart';
 import 'package:ride_now_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:ride_now_app/features/auth/presentation/pages/splash_screen.dart';
 
@@ -24,7 +22,6 @@ class AppWrapper extends StatelessWidget {
       },
       child: BlocSelector<AppUserCubit, AppUserState, User?>(selector: (state) {
         if (state is AppUserLoggedIn) {
-   
           return state.user;
         }
         return null;

@@ -148,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 }
                               },
                         child: state is AuthLoading
-                            ? const CircularProgressIndicator()
+                            ? const CircularProgressIndicator(color: Colors.white,)
                             : const Text("Log In"),
                       );
                     },

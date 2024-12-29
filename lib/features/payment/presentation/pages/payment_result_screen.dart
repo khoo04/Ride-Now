@@ -5,7 +5,6 @@ import 'package:ride_now_app/core/common/widgets/my_app_bar.dart';
 import 'package:ride_now_app/core/common/widgets/navigate_back_button.dart';
 import 'package:ride_now_app/core/theme/app_pallete.dart';
 import 'package:ride_now_app/features/payment/presentation/cubit/payment_cubit.dart';
-import 'package:ride_now_app/features/ride/domain/entities/ride.dart';
 import 'package:ride_now_app/features/ride/presentation/pages/ride_detail_screen.dart';
 
 class PaymentResultScreen extends StatelessWidget {

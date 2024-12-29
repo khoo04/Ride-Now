@@ -78,9 +78,11 @@ class UpdateRideSuccessScreen extends StatelessWidget {
                                   ride: ride,
                                 ),
                               );
-                          context.read<RideMainBloc>().add(InitFetchRide());
-                          Navigator.of(context)
-                              .pushReplacementNamed(RideDetailScreen.routeName);
+                          // context
+                          //     .read<RideMainBloc>()
+                          //     .add(const InitFetchRide());
+                          //Pop to details screen
+                          Navigator.of(context).pop();
                         },
                         child: const Text("View Ride"),
                       ),

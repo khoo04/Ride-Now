@@ -9,8 +9,6 @@ import 'package:ride_now_app/core/secrets/app_secret.dart';
 import 'package:ride_now_app/core/theme/app_pallete.dart';
 import 'package:ride_now_app/core/utils/logger.dart';
 import 'package:ride_now_app/features/payment/presentation/cubit/payment_cubit.dart';
-import 'package:ride_now_app/features/payment/presentation/pages/payment_failed_screen.dart';
-import 'package:ride_now_app/features/payment/presentation/pages/payment_success_screen.dart';
 import 'package:ride_now_app/features/profile/presentation/pages/profile_screen.dart';
 import 'package:ride_now_app/features/ride/data/models/ride_model.dart';
 import 'package:ride_now_app/features/auth/domain/usecases/get_broadcasting_auth_token.dart';

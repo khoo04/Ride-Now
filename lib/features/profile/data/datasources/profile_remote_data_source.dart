@@ -9,7 +9,6 @@ import 'package:ride_now_app/core/network/app_response.dart';
 import 'package:ride_now_app/core/network/network_client.dart';
 import 'package:ride_now_app/features/auth/data/models/user_model.dart';
 import 'package:ride_now_app/features/profile/data/models/voucher_model.dart';
-import 'package:ride_now_app/features/profile/domain/entities/voucher.dart';
 import 'package:ride_now_app/features/ride/data/models/vehicle_model.dart';
 
 abstract interface class ProfileRemoteDataSource {
@@ -76,6 +75,8 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
         throw const ServerException(Constants.connectionTimeout);
       }
       throw ServerException(e.message!);
+    } on ServerException {
+      rethrow;
     } catch (e) {
       throw ServerException(e.toString());
     }
@@ -118,6 +119,8 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
       }
       throw ServerException(e.message!);
     } on ServerValidatorException {
+      rethrow;
+    } on ServerException {
       rethrow;
     } catch (e) {
       throw ServerException(e.toString());
@@ -163,6 +166,8 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
       throw ServerException(e.message!);
     } on ServerValidatorException {
       rethrow;
+    } on ServerException {
+      rethrow;
     } catch (e) {
       throw ServerException(e.toString());
     }
@@ -189,6 +194,8 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
         throw const ServerException(Constants.connectionTimeout);
       }
       throw ServerException(e.message!);
+    } on ServerException {
+      rethrow;
     } catch (e) {
       throw ServerException(e.toString());
     }
@@ -219,6 +226,8 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
         throw const ServerException(Constants.connectionTimeout);
       }
       throw ServerException(e.message!);
+    } on ServerException {
+      rethrow;
     } catch (e) {
       throw ServerException(e.toString());
     }

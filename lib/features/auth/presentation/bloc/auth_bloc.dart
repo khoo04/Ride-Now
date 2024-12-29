@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:ride_now_app/core/common/entities/user.dart';
+import 'package:ride_now_app/core/constants/constants.dart';
 import 'package:ride_now_app/core/cubits/app_user/app_user_cubit.dart';
 import 'package:ride_now_app/core/usecase/usecase.dart';
 import 'package:ride_now_app/core/utils/logger.dart';
@@ -9,6 +11,7 @@ import 'package:ride_now_app/features/auth/domain/usecases/user_login.dart';
 import 'package:ride_now_app/features/auth/domain/usecases/user_logout.dart';
 import 'package:ride_now_app/features/auth/domain/usecases/user_register.dart';
 import 'package:ride_now_app/features/auth/domain/usecases/user_remember_me_status_checked.dart';
+import 'package:ride_now_app/init_dependencies.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -46,6 +49,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthRegisterUser>(_onRegisterUser);
     on<AuthRememberMeStatusChecked>(_onRememberMeStatusChecked);
     on<AuthUpdateUser>(_onAuthUpdateUser);
+    on<AuthUserSessionExpired>(_onAuthUserSessionExpired);
   }
 
   _onAuthLogin(AuthLogin event, Emitter<AuthState> emit) async {
@@ -119,6 +123,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void _onAuthUpdateUser(AuthUpdateUser event, Emitter<AuthState> emit) {
     _emitAuthSuccess(event.user, emit);
+  }
+
+  Future<void> _onAuthUserSessionExpired(
+      AuthUserSessionExpired event, Emitter<AuthState> emit) async {
+    final flutterSecureStorage = serviceLocator<FlutterSecureStorage>();
+    await flutterSecureStorage.write(key: "isRemember", value: null);
+    await flutterSecureStorage.delete(key: "access_token");
+    emit(const AuthFailure(Constants.sessionExpired));
+    emit(AuthInitial());
+    _appUserCubit.updateUser(null);
   }
 
   void _emitAuthSuccess(User user, Emitter<AuthState> emit) {

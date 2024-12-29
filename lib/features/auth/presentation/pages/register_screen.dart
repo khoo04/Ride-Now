@@ -216,7 +216,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 }
                               },
                         child: state is AuthLoading
-                            ? const CircularProgressIndicator()
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
                             : const Text("Register"),
                       );
                     },
