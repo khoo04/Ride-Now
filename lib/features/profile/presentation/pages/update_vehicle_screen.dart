@@ -34,6 +34,7 @@ class _UpdateVehicleScreenState extends State<UpdateVehicleScreen> {
   /// 0 - Represent km/L
   /// 1 - Represent L/100km
   int _selectedUnit = 0;
+  bool isInitialized = false;
 
   // Errors Text
   String? _vehicleManufacturerError;
@@ -44,16 +45,22 @@ class _UpdateVehicleScreenState extends State<UpdateVehicleScreen> {
   @override
   Widget build(BuildContext context) {
     final vehicleBloc = context.read<VehicleBloc>();
+
     final vehicleToUpdate =
         ModalRoute.of(context)!.settings.arguments as Vehicle;
-    _carManufacturerController.text = vehicleToUpdate.manufacturer;
-    _carModelController.text = vehicleToUpdate.model;
-    _carRegistrationNumberController.text =
-        vehicleToUpdate.vehicleRegistrationNumber;
-    _fuelConsumptionController.text =
-        vehicleToUpdate.averageFuelConsumption.toStringAsFixed(2);
-    _vehicleType = vehicleToUpdate.vehicleType.index + 1;
-    _seatNumber = vehicleToUpdate.seats;
+
+    if (!isInitialized) {
+      _carManufacturerController.text = vehicleToUpdate.manufacturer;
+      _carModelController.text = vehicleToUpdate.model;
+      _carRegistrationNumberController.text =
+          vehicleToUpdate.vehicleRegistrationNumber;
+      _fuelConsumptionController.text =
+          vehicleToUpdate.averageFuelConsumption.toStringAsFixed(2);
+      _vehicleType = vehicleToUpdate.vehicleType.index + 1;
+      _seatNumber = vehicleToUpdate.seats;
+
+      isInitialized = true;
+    }
 
     return SafeArea(
       child: Scaffold(
@@ -83,7 +90,8 @@ class _UpdateVehicleScreenState extends State<UpdateVehicleScreen> {
                     _showErrosHint(state.registrationErrors);
                   } else if (state is VehicleRegisterSuccess) {
                     Navigator.of(context)
-                        .popAndPushNamed(VehicleActionSuccessScreen.routeName,arguments: "update")
+                        .popAndPushNamed(VehicleActionSuccessScreen.routeName,
+                            arguments: "update")
                         .then((_) {
                       // This block is executed when the screen popped back
                       vehicleBloc.add(FetchUserVehicles());
@@ -154,6 +162,9 @@ class _UpdateVehicleScreenState extends State<UpdateVehicleScreen> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Vehicle manufacturer is required";
+                          } else if (!RegExp(r'^[a-zA-Z0-9 ]+$')
+                              .hasMatch(value)) {
+                            return "Only alphabets, numbers and spaces are allowed";
                           }
                           return null;
                         },
@@ -168,6 +179,9 @@ class _UpdateVehicleScreenState extends State<UpdateVehicleScreen> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Vehicle model is required";
+                          } else if (!RegExp(r'^[a-zA-Z0-9 ]+$')
+                              .hasMatch(value)) {
+                            return "Only alphabets, numbers and spaces are allowed";
                           }
                           return null;
                         },
@@ -182,6 +196,9 @@ class _UpdateVehicleScreenState extends State<UpdateVehicleScreen> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Vehicle registration number is required";
+                          } else if (!RegExp(r'^[a-zA-Z0-9 ]+$')
+                              .hasMatch(value)) {
+                            return "Only alphabets, numbers and spaces are allowed";
                           }
                           return null;
                         },
@@ -261,6 +278,8 @@ class _UpdateVehicleScreenState extends State<UpdateVehicleScreen> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Vehicle average fuel consumptions is required";
+                          } else if (!RegExp(r'^[0-9.]+$').hasMatch(value)) {
+                            return "Only numbers are allowed";
                           }
                           return null;
                         },
@@ -279,30 +298,65 @@ class _UpdateVehicleScreenState extends State<UpdateVehicleScreen> {
                                   : () {
                                       if (_updateVehicleFormKey.currentState!
                                           .validate()) {
-                                        final manufacturer =
-                                            _carManufacturerController.text
-                                                .trim();
-                                        final model =
-                                            _carModelController.text.trim();
-                                        final registrationNumber =
-                                            _carRegistrationNumberController
-                                                .text
-                                                .trim()
-                                                .replaceAll(' ', '');
-                                        final vehicleType = _vehicleType;
-                                        final seats = _seatNumber;
-                                        late double fuelConsumption;
-                                        if (_selectedUnit == 1) {
+                                        String? manufacturer =
+                                            (_carManufacturerController.text
+                                                        .trim() !=
+                                                    vehicleToUpdate
+                                                        .manufacturer)
+                                                ? _carManufacturerController
+                                                    .text
+                                                    .trim()
+                                                : null;
+
+                                        String? model = (_carModelController
+                                                    .text
+                                                    .trim() !=
+                                                vehicleToUpdate.model)
+                                            ? _carModelController.text.trim()
+                                            : null;
+
+                                        String? registrationNumber =
+                                            (_carRegistrationNumberController
+                                                        .text
+                                                        .trim() !=
+                                                    vehicleToUpdate
+                                                        .vehicleRegistrationNumber)
+                                                ? _carRegistrationNumberController
+                                                    .text
+                                                    .trim()
+                                                    .replaceAll(' ', '')
+                                                : null;
+
+                                        int? vehicleType = (_vehicleType !=
+                                                vehicleToUpdate
+                                                        .vehicleType.index +
+                                                    1)
+                                            ? _vehicleType
+                                            : null;
+
+                                        int? seats = (_seatNumber !=
+                                                vehicleToUpdate.seats)
+                                            ? _seatNumber
+                                            : null;
+
+                                        double? fuelConsumption =
+                                            (_fuelConsumptionController.text
+                                                            .trim() !=
+                                                        vehicleToUpdate
+                                                            .averageFuelConsumption
+                                                            .toStringAsFixed(
+                                                                2) ||
+                                                    _selectedUnit == 1)
+                                                ? double.parse(
+                                                    _fuelConsumptionController
+                                                        .text
+                                                        .trim())
+                                                : null;
+
+                                        if (fuelConsumption != null) {
                                           fuelConsumption =
                                               convertLPer100KmToKmPerL(
-                                                  double.parse(
-                                                      _fuelConsumptionController
-                                                          .text
-                                                          .trim()));
-                                        } else {
-                                          fuelConsumption = double.parse(
-                                              _fuelConsumptionController.text
-                                                  .trim());
+                                                  fuelConsumption);
                                         }
 
                                         context.read<VehicleBloc>().add(

@@ -67,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: _emailController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return "Email cannot be empty";
+                        return "Email is required";
                       } else if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")
                           .hasMatch(value)) {
                         return "The email format is not valid";
@@ -83,7 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: _passwordController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return "Password cannot be empty";
+                        return "Password is required";
                       }
                       return null;
                     },
@@ -148,7 +148,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 }
                               },
                         child: state is AuthLoading
-                            ? const CircularProgressIndicator(color: Colors.white,)
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
                             : const Text("Log In"),
                       );
                     },

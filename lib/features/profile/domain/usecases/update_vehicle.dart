@@ -23,12 +23,12 @@ class UpdateVehicle implements Usecase<Vehicle, UpdateVehicleParams> {
 
 class UpdateVehicleParams {
   final int vehicleId;
-  final String vehicleRegistrationNumber;
-  final String manufacturer;
-  final String model;
-  final int seats;
-  final double averageFuelConsumptions;
-  final int vehicleTypeId;
+  final String? vehicleRegistrationNumber;
+  final String? manufacturer;
+  final String? model;
+  final int? seats;
+  final double? averageFuelConsumptions;
+  final int? vehicleTypeId;
 
   UpdateVehicleParams({
     required this.vehicleId,

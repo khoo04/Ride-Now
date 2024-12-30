@@ -200,7 +200,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                               controller: _nameController,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return "Username cannot be empty";
+                                  return "Username is required";
+                                } else if (!RegExp(r'^[a-zA-Z0-9 ]+$')
+                                    .hasMatch(value)) {
+                                  return "Only alphabets, numbers and spaces are allowed";
                                 }
                                 return null;
                               },
@@ -214,7 +217,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                               controller: _phoneNumController,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return "Phone number cannot be empty";
+                                  return "Phone number is required";
                                 } else if (!RegExp(
                                         r'^\+60\s\d{2}\s(?:\d{3}|\d{4})\s\d{4}$')
                                     .hasMatch(
@@ -255,7 +258,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                               controller: _emailController,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return "Email cannot be empty";
+                                  return "Email is required";
                                 } else if (!RegExp(
                                         r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")
                                     .hasMatch(value)) {
@@ -347,8 +350,6 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                           _phoneNumController.text.trim())
                                       : null;
 
-                              eLog(
-                                  "${_phoneNumController.text.trim() == user.phone} ${_phoneNumController.text.trim()} ${user.phone}");
                               String? oldPassword = (_oldPasswordController.text
                                           .trim()
                                           .isNotEmpty &&

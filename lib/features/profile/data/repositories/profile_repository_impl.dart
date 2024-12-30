@@ -6,7 +6,6 @@ import 'package:ride_now_app/core/constants/constants.dart';
 import 'package:ride_now_app/core/error/exception.dart';
 import 'package:ride_now_app/core/error/failure.dart';
 import 'package:ride_now_app/core/network/connection_checker.dart';
-import 'package:ride_now_app/core/utils/logger.dart';
 import 'package:ride_now_app/features/profile/data/datasources/profile_remote_data_source.dart';
 import 'package:ride_now_app/features/profile/domain/entities/voucher.dart';
 import 'package:ride_now_app/features/profile/domain/repositories/profile_repository.dart';
@@ -64,12 +63,12 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<Either<Failure, Vehicle>> updateVehicle({
     required int vehicleId,
-    required String vehicleRegistrationNumber,
-    required String manufacturer,
-    required String model,
-    required int seats,
-    required double averageFuelConsumptions,
-    required int vehicleTypeId,
+    required String? vehicleRegistrationNumber,
+    required String? manufacturer,
+    required String? model,
+    required int? seats,
+    required double? averageFuelConsumptions,
+    required int? vehicleTypeId,
   }) async {
     try {
       if (!await (_connectionChecker.isConnected)) {

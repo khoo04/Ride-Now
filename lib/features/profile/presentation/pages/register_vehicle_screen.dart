@@ -7,7 +7,6 @@ import 'package:ride_now_app/core/common/widgets/my_app_bar.dart';
 import 'package:ride_now_app/core/common/widgets/navigate_back_button.dart';
 import 'package:ride_now_app/core/theme/app_pallete.dart';
 import 'package:ride_now_app/core/utils/convert_fuel_consumption_unit.dart';
-import 'package:ride_now_app/core/utils/logger.dart';
 import 'package:ride_now_app/core/utils/string_extension.dart';
 import 'package:ride_now_app/features/profile/presentation/bloc/vehicle/vehicle_bloc.dart';
 import 'package:ride_now_app/features/profile/presentation/pages/vehicle_action_success_screen.dart';
@@ -142,6 +141,9 @@ class _RegisterVehicleScreenState extends State<RegisterVehicleScreen> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Vehicle manufacturer is required";
+                          } else if (!RegExp(r'^[a-zA-Z0-9 ]+$')
+                              .hasMatch(value)) {
+                            return "Only alphabets, numbers and spaces are allowed";
                           }
                           return null;
                         },
@@ -156,6 +158,9 @@ class _RegisterVehicleScreenState extends State<RegisterVehicleScreen> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Vehicle model is required";
+                          } else if (!RegExp(r'^[a-zA-Z0-9 ]+$')
+                              .hasMatch(value)) {
+                            return "Only alphabets, numbers and spaces are allowed";
                           }
                           return null;
                         },
@@ -170,6 +175,9 @@ class _RegisterVehicleScreenState extends State<RegisterVehicleScreen> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Vehicle registration number is required";
+                          } else if (!RegExp(r'^[a-zA-Z0-9 ]+$')
+                              .hasMatch(value)) {
+                            return "Only alphabets, numbers and spaces are allowed";
                           }
                           return null;
                         },
@@ -249,6 +257,8 @@ class _RegisterVehicleScreenState extends State<RegisterVehicleScreen> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Vehicle average fuel consumptions is required";
+                          } else if (!RegExp(r'^[0-9.]+$').hasMatch(value)) {
+                            return "Only numbers are allowed";
                           }
                           return null;
                         },

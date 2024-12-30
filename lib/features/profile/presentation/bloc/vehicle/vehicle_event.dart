@@ -25,12 +25,12 @@ class CreateVehicleEvent extends VehicleEvent {
 
 class UpdateVehicleEvent extends VehicleEvent {
   final int vehicleId;
-  final String vehicleRegistrationNumber;
-  final String manufacturer;
-  final String model;
-  final int seats;
-  final double averageFuelConsumptions;
-  final int vehicleTypeId;
+  final String? vehicleRegistrationNumber;
+  final String? manufacturer;
+  final String? model;
+  final int? seats;
+  final double? averageFuelConsumptions;
+  final int? vehicleTypeId;
 
   UpdateVehicleEvent({
     required this.vehicleId,

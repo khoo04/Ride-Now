@@ -20,12 +20,12 @@ abstract interface class ProfileRepository {
 
   Future<Either<Failure, Vehicle>> updateVehicle({
     required int vehicleId,
-    required String vehicleRegistrationNumber,
-    required String manufacturer,
-    required String model,
-    required int seats,
-    required double averageFuelConsumptions,
-    required int vehicleTypeId,
+    required String? vehicleRegistrationNumber,
+    required String? manufacturer,
+    required String? model,
+    required int? seats,
+    required double? averageFuelConsumptions,
+    required int? vehicleTypeId,
   });
 
   Future<Either<Failure, bool>> deleteVehicle({required int vehicleId});

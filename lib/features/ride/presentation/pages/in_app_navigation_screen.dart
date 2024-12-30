@@ -42,6 +42,8 @@ class _InAppNavigationScreenState extends State<InAppNavigationScreen> {
   late BitmapDescriptor originIcon;
   late BitmapDescriptor destinationIcon;
   late BitmapDescriptor myLocationIcon;
+  late final User? currentUser;
+  late final Ride? currentRide;
 
   final ValueNotifier<LatLng> _userCurrentPositionNotifier =
       ValueNotifier<LatLng>(const LatLng(0, 0));
@@ -112,6 +114,10 @@ class _InAppNavigationScreenState extends State<InAppNavigationScreen> {
     super.initState();
     _initializeMapFuture = _initializeMap();
     getLocationUpdates();
+    final userState = context.read<AppUserCubit>().state;
+    currentUser = (userState is AppUserLoggedIn) ? userState.user : null;
+    final rideState = context.read<RideBloc>().state;
+    currentRide = (rideState is RideSelected) ? rideState.ride : null;
   }
 
   @override
@@ -144,217 +150,180 @@ class _InAppNavigationScreenState extends State<InAppNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<AppUserCubit, AppUserState, AppUserLoggedIn?>(
-      selector: (state) {
-        return state is AppUserLoggedIn ? state : null;
-      },
-      builder: (context, userState) {
-        if (userState == null) {
+    return Builder(
+      builder: (context) {
+        if (currentUser == null) {
           return const Center(
             child: Text("User is not logged in"),
           );
+        } else if (currentRide == null) {
+          return const Center(
+            child: Text("Unable to fetch selected ride details"),
+          );
         }
-        return BlocSelector<RideBloc, RideState, RideSelected?>(
-          selector: (state) {
-            return state is RideSelected ? state : null;
-          },
-          builder: (context, state) {
-            if (state == null) {
-              return const Center(
-                child: Text("Unable to fetch selected ride details"),
-              );
-            }
-            final ride = state.ride;
-            final isDriver = state.ride.driver.id == userState.user.id;
-            return SafeArea(
-              child: Scaffold(
-                appBar: MyAppBar(
-                  enabledBackground: true,
-                  leading: NavigateBackButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                  title: isDriver
-                      ? const Text(
-                          "Meet your passengers",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 20,
-                          ),
-                        )
-                      : const Text(
-                          "Meet your driver",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 20,
-                          ),
-                        ),
-                ),
-                body: Stack(
-                  children: [
-                    FutureBuilder(
-                      future: Future.wait([
-                        _initializeMapFuture,
-                        generatePolyLineFromPoints(ride),
-                        loadCustomMarkerIcon(),
-                      ]),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator(
-                            color: AppPallete.primaryColor,
-                          ));
-                        } else if (snapshot.hasError) {
-                          return Center(
-                            child: Text(
-                              'Error: ${snapshot.error}',
-                              style: const TextStyle(color: Colors.red),
-                            ),
-                          );
-                        }
-                        return ValueListenableBuilder<LatLng>(
-                          valueListenable: _userCurrentPositionNotifier,
-                          builder: (context, currentPosition, _) {
-                            return GoogleMap(
-                              onMapCreated: (GoogleMapController controller) {
-                                _controller.complete(controller);
-                              },
-                              initialCameraPosition: CameraPosition(
-                                target: LatLng(ride.origin.latitude,
-                                    ride.origin.longitude),
-                                zoom: 15,
-                              ),
-                              mapToolbarEnabled: false,
-                              zoomControlsEnabled: false,
-                              myLocationButtonEnabled: true,
-                              markers: {
-                                Marker(
-                                  markerId: const MarkerId("my_location"),
-                                  icon: myLocationIcon,
-                                  position: LatLng(currentPosition.latitude,
-                                      currentPosition.longitude),
-                                ),
-                                Marker(
-                                  markerId: const MarkerId("orgin"),
-                                  icon: originIcon,
-                                  position: LatLng(ride.origin.latitude,
-                                      ride.origin.longitude),
-                                ),
-                                Marker(
-                                  markerId: const MarkerId("destination"),
-                                  icon: destinationIcon,
-                                  position: LatLng(ride.destination.latitude,
-                                      ride.destination.longitude),
-                                ),
-                              },
-                              polylines: Set<Polyline>.of(polylines.values),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: Column(
-                        children: [
-                          IconButton.filled(
-                            style: IconButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.black,
-                            ),
-                            icon: const Icon(Icons.my_location),
-                            onPressed: () async {
-                              final controller = await _controller.future;
-                              await controller.animateCamera(
-                                  CameraUpdate.newLatLng(LatLng(
-                                      _userCurrentPositionNotifier
-                                          .value.latitude,
-                                      _userCurrentPositionNotifier
-                                          .value.longitude)));
-                            },
-                          ),
-                          IconButton.filled(
-                            style: IconButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: AppPallete.primaryColor,
-                            ),
-                            icon: const Icon(Icons.trip_origin),
-                            onPressed: () async {
-                              final controller = await _controller.future;
-                              await controller.animateCamera(
-                                  CameraUpdate.newLatLng(LatLng(
-                                      ride.origin.latitude,
-                                      ride.origin.longitude)));
-                            },
-                          ),
-                          IconButton.filled(
-                            style: IconButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.green,
-                            ),
-                            icon: const Icon(Icons.flag_sharp),
-                            onPressed: () async {
-                              final controller = await _controller.future;
-                              await controller.animateCamera(
-                                  CameraUpdate.newLatLng(LatLng(
-                                      ride.destination.latitude,
-                                      ride.destination.longitude)));
-                            },
-                          ),
-                        ],
+        bool isDriver = currentUser!.id == currentRide!.driver.id;
+        return SafeArea(
+          child: Scaffold(
+            appBar: MyAppBar(
+              enabledBackground: true,
+              leading: NavigateBackButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              title: isDriver
+                  ? const Text(
+                      "Meet your passengers",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 20,
+                      ),
+                    )
+                  : const Text(
+                      "Meet your driver",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 20,
                       ),
                     ),
-                    Builder(builder: (context) {
+            ),
+            body: Stack(
+              children: [
+                FutureBuilder(
+                  future: Future.wait([
+                    _initializeMapFuture,
+                    generatePolyLineFromPoints(currentRide!),
+                    loadCustomMarkerIcon(),
+                  ]),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                          child: CircularProgressIndicator(
+                        color: AppPallete.primaryColor,
+                      ));
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Text(
+                          'Error: ${snapshot.error}',
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      );
+                    }
+                    return ValueListenableBuilder<LatLng>(
+                      valueListenable: _userCurrentPositionNotifier,
+                      builder: (context, currentPosition, _) {
+                        return GoogleMap(
+                          onMapCreated: (GoogleMapController controller) {
+                            //FIXME: Rebuild after state changed
+                            _controller.complete(controller);
+                          },
+                          initialCameraPosition: CameraPosition(
+                            target: LatLng(currentRide!.origin.latitude,
+                                currentRide!.origin.longitude),
+                            zoom: 15,
+                          ),
+                          mapToolbarEnabled: false,
+                          zoomControlsEnabled: false,
+                          myLocationButtonEnabled: true,
+                          markers: {
+                            Marker(
+                              markerId: const MarkerId("my_location"),
+                              icon: myLocationIcon,
+                              position: LatLng(currentPosition.latitude,
+                                  currentPosition.longitude),
+                            ),
+                            Marker(
+                              markerId: const MarkerId("orgin"),
+                              icon: originIcon,
+                              position: LatLng(currentRide!.origin.latitude,
+                                  currentRide!.origin.longitude),
+                            ),
+                            Marker(
+                              markerId: const MarkerId("destination"),
+                              icon: destinationIcon,
+                              position: LatLng(
+                                  currentRide!.destination.latitude,
+                                  currentRide!.destination.longitude),
+                            ),
+                          },
+                          polylines: Set<Polyline>.of(polylines.values),
+                        );
+                      },
+                    );
+                  },
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: Column(
+                    children: [
+                      IconButton.filled(
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.black,
+                        ),
+                        icon: const Icon(Icons.my_location),
+                        onPressed: () async {
+                          final controller = await _controller.future;
+                          await controller.animateCamera(CameraUpdate.newLatLng(
+                              LatLng(
+                                  _userCurrentPositionNotifier.value.latitude,
+                                  _userCurrentPositionNotifier
+                                      .value.longitude)));
+                        },
+                      ),
+                      IconButton.filled(
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: AppPallete.primaryColor,
+                        ),
+                        icon: const Icon(Icons.trip_origin),
+                        onPressed: () async {
+                          final controller = await _controller.future;
+                          await controller.animateCamera(CameraUpdate.newLatLng(
+                              LatLng(currentRide!.origin.latitude,
+                                  currentRide!.origin.longitude)));
+                        },
+                      ),
+                      IconButton.filled(
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.green,
+                        ),
+                        icon: const Icon(Icons.flag_sharp),
+                        onPressed: () async {
+                          final controller = await _controller.future;
+                          await controller.animateCamera(CameraUpdate.newLatLng(
+                              LatLng(currentRide!.destination.latitude,
+                                  currentRide!.destination.longitude)));
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                BlocSelector<RideBloc, RideState, RideSelected?>(
+                  selector: (state) {
+                    return state is RideSelected ? state : null;
+                  },
+                  builder: (context, state) {
+                    if (state == null) {
+                      return const Center(
+                        child: Text("Unable to fetch selected ride details"),
+                      );
+                    }
+                    final ride = state.ride;
+                    return Builder(builder: (context) {
                       if (isDriver) {
                         return _driverView(context, ride);
                       } else {
-                        return _passengerView(context, ride, userState.user);
+                        return _passengerView(context, ride, currentUser!);
                       }
-                    }),
-                    //   Column(
-                    //     mainAxisAlignment: MainAxisAlignment.end,
-                    //     mainAxisSize: MainAxisSize.max,
-                    //     children: [
-                    //       Container(
-                    //         width: MediaQuery.of(context).size.width,
-                    //         padding: const EdgeInsets.all(8.0),
-                    //         color: AppPallete.whiteColor,
-                    //         child: Column(
-                    //           children: [
-                    //             ElevatedButton(
-                    //               onPressed: () async {
-                    //                 final controller = await _controller.future;
-                    //                 await controller.animateCamera(CameraUpdate.newLatLng(
-                    //                     LatLng(
-                    //                         _userCurrentPositionNotifier.value.latitude,
-                    //                         _userCurrentPositionNotifier
-                    //                             .value.longitude)));
-                    //               },
-                    //               child: const Text("View Current Position"),
-                    //             ),
-                    //             ElevatedButton(
-                    //               onPressed: () async {
-                    //                 final controller = await _controller.future;
-                    //                 await controller.animateCamera(CameraUpdate.newLatLng(
-                    //                     LatLng(ride.origin.latitude,
-                    //                         ride.origin.longitude)));
-                    //               },
-                    //               child: const Text("View Origin"),
-                    //             ),
-                    //           ],
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ],
-                  ],
+                    });
+                  },
                 ),
-              ),
-            );
-          },
+              ],
+            ),
+          ),
         );
       },
     );

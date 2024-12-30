@@ -24,12 +24,12 @@ abstract interface class ProfileRemoteDataSource {
 
   Future<VehicleModel> updateVehicle({
     required int vehicleId,
-    required String vehicleRegistrationNumber,
-    required String manufacturer,
-    required String model,
-    required int seats,
-    required double averageFuelConsumptions,
-    required int vehicleTypeId,
+    String? vehicleRegistrationNumber,
+    String? manufacturer,
+    String? model,
+    int? seats,
+    double? averageFuelConsumptions,
+    int? vehicleTypeId,
   });
 
   Future<bool> deleteVehicle({required int vehicleId});
@@ -110,8 +110,10 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
       if (response.statusCode == 200) {
         final appResponse = AppResponse.fromJson(response.data);
         return VehicleModel.fromJson(appResponse.data);
-      } else {
+      } else if (response.data["errors"] != null) {
         throw ServerValidatorException.fromJson(response.data);
+      } else {
+        throw ServerException(response.data["message"]);
       }
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout) {
@@ -130,34 +132,65 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   @override
   Future<VehicleModel> updateVehicle({
     required int vehicleId,
-    required String vehicleRegistrationNumber,
-    required String manufacturer,
-    required String model,
-    required int seats,
-    required double averageFuelConsumptions,
-    required int vehicleTypeId,
+    String? vehicleRegistrationNumber,
+    String? manufacturer,
+    String? model,
+    int? seats,
+    double? averageFuelConsumptions,
+    int? vehicleTypeId,
   }) async {
     try {
       final token = await _flutterSecureStorage.read(key: "access_token");
+
+      Map<String, dynamic> requestBody = {};
+      if (vehicleRegistrationNumber != null) {
+        requestBody.addAll({
+          "vehicle_registration_number": vehicleRegistrationNumber,
+        });
+      }
+
+      if (manufacturer != null) {
+        requestBody.addAll({
+          "manufacturer": manufacturer,
+        });
+      }
+
+      if (model != null) {
+        requestBody.addAll({
+          "model": model,
+        });
+      }
+
+      if (seats != null) {
+        requestBody.addAll({
+          "seats": seats,
+        });
+      }
+      if (averageFuelConsumptions != null) {
+        requestBody.addAll({
+          "average_fuel_consumptions": averageFuelConsumptions,
+        });
+      }
+      if (vehicleTypeId != null) {
+        requestBody.addAll({
+          "vehicle_type_id": vehicleTypeId,
+        });
+      }
+
       final response = await _networkClient.invoke(
         "${ApiRoutes.vehicle}/$vehicleId",
         RequestType.patch,
-        requestBody: {
-          "vehicle_registration_number": vehicleRegistrationNumber,
-          "manufacturer": manufacturer,
-          "model": model,
-          "seats": seats,
-          "average_fuel_consumptions": averageFuelConsumptions,
-          "vehicle_type_id": vehicleTypeId,
-        },
+        requestBody: requestBody,
         headers: {"Authorization": "Bearer $token"},
       );
 
       if (response.statusCode == 200) {
         final appResponse = AppResponse.fromJson(response.data);
         return VehicleModel.fromJson(appResponse.data);
-      } else {
+      } else if (response.data["errors"] != null) {
         throw ServerValidatorException.fromJson(response.data);
+      } else {
+        throw ServerException(response.data["message"]);
       }
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout) {

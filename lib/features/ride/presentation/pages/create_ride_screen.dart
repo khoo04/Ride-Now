@@ -311,25 +311,21 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                               },
                               keyboardType: TextInputType.number,
                               onChanged: (price) {
-                                //TODO: Change the logic
-                                // Extract only digits and the decimal point from the input
                                 String extractedNumber =
                                     price.replaceAll(RegExp('[^0-9]'), '');
 
-                                if (extractedNumber.length >= 2) {
-                                  //If number length is have more than 2 places, add the '.'
+                                if (extractedNumber.isEmpty) {
                                   extractedNumber =
-                                      "${extractedNumber.substring(0, extractedNumber.length - 2)}.${extractedNumber.substring(extractedNumber.length - 2)}";
+                                      '0.00'; // Default for empty input
+                                } else if (extractedNumber.length == 1) {
+                                  extractedNumber =
+                                      '0.0$extractedNumber'; // Single digit input
+                                } else if (extractedNumber.length == 2) {
+                                  extractedNumber =
+                                      '0.$extractedNumber'; // Two digits input
                                 } else {
                                   extractedNumber =
-                                      "0.${extractedNumber.padLeft(2, '0')}";
-                                }
-                                //Replace 0 for start of line
-                                extractedNumber = extractedNumber.replaceFirst(
-                                    RegExp('0'), '');
-
-                                if (extractedNumber.startsWith(".")) {
-                                  extractedNumber = '0$extractedNumber';
+                                      "${extractedNumber.substring(0, extractedNumber.length - 2)}.${extractedNumber.substring(extractedNumber.length - 2)}";
                                 }
                                 // Ensure a valid double value
                                 final userInputPrice =
