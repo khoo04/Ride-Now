@@ -503,6 +503,7 @@ class _InAppNavigationScreenState extends State<InAppNavigationScreen> {
                           child: Builder(builder: (context) {
                             final status = ride.status;
                             if (status == "confirmed") {
+                              //TODO: Start Ride should be available before 5 minutes of the departure time
                               if (false) {
                                 return const AppButton(
                                   onPressed: null,

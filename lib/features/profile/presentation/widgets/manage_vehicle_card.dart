@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ride_now_app/core/theme/app_pallete.dart';
 import 'package:ride_now_app/features/profile/presentation/bloc/vehicle/vehicle_bloc.dart';
-import 'package:ride_now_app/features/profile/presentation/pages/manage_vehicles_screen.dart';
-import 'package:ride_now_app/features/profile/presentation/pages/register_vehicle_screen.dart';
 import 'package:ride_now_app/features/profile/presentation/pages/update_vehicle_screen.dart';
 import 'package:ride_now_app/features/ride/domain/entities/vehicle.dart';
 

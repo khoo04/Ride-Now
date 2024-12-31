@@ -45,6 +45,7 @@ class _ManageVehiclesScreenState extends State<ManageVehiclesScreen> {
             listener: (context, state) {
               if (state is VehicleFailure) {
                 showSnackBar(context, state.message);
+                context.read<VehicleBloc>().add(FetchUserVehicles());
               } else if (state is VehicleDeleteSuccess) {
                 showSnackBar(context, "Vehicle deleted successfully");
                 context.read<VehicleBloc>().add(FetchUserVehicles());
