@@ -52,6 +52,7 @@ import 'package:ride_now_app/features/ride/domain/usecases/get_ride_cost_suggest
 import 'package:ride_now_app/features/payment/domain/usecases/get_ride_payment_link.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/get_user_created_rides.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/get_user_joined_rides.dart';
+import 'package:ride_now_app/features/ride/domain/usecases/leave_ride.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/rate_ride.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/search_available_rides.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/start_ride.dart';

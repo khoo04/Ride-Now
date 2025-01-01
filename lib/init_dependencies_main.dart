@@ -218,6 +218,11 @@ void _initRide() {
       ),
     )
     ..registerFactory(
+      () => LeaveRide(
+        serviceLocator<RideRepository>(),
+      ),
+    )
+    ..registerFactory(
       () => CompleteRide(
         serviceLocator<RideRepository>(),
       ),
@@ -248,6 +253,7 @@ void _initRide() {
         yourRideListCubit: serviceLocator<YourRideListCubit>(),
         startRide: serviceLocator<StartRide>(),
         completeRide: serviceLocator<CompleteRide>(),
+        leaveRide: serviceLocator<LeaveRide>(),
       ),
     )
     ..registerLazySingleton(

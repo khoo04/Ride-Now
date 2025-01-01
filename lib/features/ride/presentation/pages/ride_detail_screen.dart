@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
-import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:ride_now_app/core/common/entities/user.dart';
 import 'package:ride_now_app/core/common/widgets/app_button.dart';
 import 'package:ride_now_app/core/common/widgets/cancel_button.dart';
@@ -36,7 +35,6 @@ class RideDetailScreen extends StatefulWidget {
 }
 
 class _RideDetailScreenState extends State<RideDetailScreen> {
-  final PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
   late RideBloc _rideBloc;
   @override
   void initState() {
@@ -494,7 +492,6 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                         CancelButton(
                             onPressed: () async {
                               //Cancel Ride
-                              //Cancel Ride
                               final value =
                                   await CustomSweetAlertDialog.show<bool>(
                                 context,
@@ -894,13 +891,88 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
 
               if (state.ride.passengers
                   .any((passenger) => passenger.id == user.id)) {
-                return AppButton(
-                  onPressed: () {
-                    Navigator.of(context)
-                        .pushNamed(InAppNavigationScreen.routeName);
-                  },
-                  child: const Text("View ride details"),
-                );
+                if (isBefore5Minutes) {
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: AppButton(
+                          onPressed: () {
+                            Navigator.of(context)
+                                .pushNamed(InAppNavigationScreen.routeName);
+                          },
+                          child: const Text("View ride details"),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 16,
+                      ),
+                      Expanded(
+                          child: CancelButton(
+                        onPressed: () async {
+                          //Leave Ride
+                          final value = await CustomSweetAlertDialog.show<bool>(
+                            context,
+                            title: const Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.warning_amber_rounded,
+                                  color: Colors.orange,
+                                  size: 50,
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  'Leave Ride?',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                            content: const Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Are you sure you want to leave this ride?',
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(
+                                  height: 4,
+                                ),
+                                Text(
+                                  'Noted: Your voucher cannot be returned and this action cannot be undone.',
+                                  textAlign: TextAlign.center,
+                                  style:
+                                      TextStyle(color: AppPallete.errorColor),
+                                ),
+                              ],
+                            ),
+                            confirmValue: true,
+                            cancelValue: false,
+                          );
+
+                          if (value) {
+                            _rideBloc
+                                .add(LeaveRideEvent(rideId: state.ride.rideId));
+                          }
+                        },
+                        child: const AutoSizeText(
+                          "Leave Ride",
+                          maxLines: 1,
+                        ),
+                      ))
+                    ],
+                  );
+                } else {
+                  return AppButton(
+                    onPressed: () {
+                      Navigator.of(context)
+                          .pushNamed(InAppNavigationScreen.routeName);
+                    },
+                    child: const Text("View ride details"),
+                  );
+                }
               } else {
                 return Row(
                   children: [

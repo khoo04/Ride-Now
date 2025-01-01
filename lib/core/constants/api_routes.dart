@@ -86,6 +86,11 @@ class ApiRoutes {
   ///Supported Query Params: origin, destination, seats, departure_time
   static const searchRide = "$apiBaseUrl/ride/search";
 
+  /// Route to Leave Ride
+  /// Method: POST
+  /// E.g: leave/{ride_id}
+  static const leaveRide = "$apiBaseUrl/ride/leave";
+
   ///Route to Get Joined Rides
   ///
   ///Method : GET
@@ -100,7 +105,7 @@ class ApiRoutes {
   /// Method: GET
   static const vouchers = "$profile/vouchers";
 
-    ///Route to get users balance
+  ///Route to get users balance
   /// Method: GET
   static const balance = "$profile/balance";
 

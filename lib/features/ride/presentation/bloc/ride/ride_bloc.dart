@@ -5,6 +5,7 @@ import 'package:ride_now_app/features/ride/domain/entities/ride.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/cancel_ride.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/complete_ride.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/fetch_ride_by_id.dart';
+import 'package:ride_now_app/features/ride/domain/usecases/leave_ride.dart';
 import 'package:ride_now_app/features/ride/domain/usecases/start_ride.dart';
 import 'package:ride_now_app/features/ride/presentation/bloc/ride_main/ride_main_bloc.dart';
 import 'package:ride_now_app/features/ride/presentation/cubit/your_ride_list/your_ride_list_cubit.dart';
@@ -18,6 +19,7 @@ class RideBloc extends Bloc<RideEvent, RideState> {
   final CancelRide _cancelRide;
   final StartRide _startRide;
   final CompleteRide _completeRide;
+  final LeaveRide _leaveRide;
   //Bloc
   final RideMainBloc _rideMainBloc;
   //Cubits
@@ -27,10 +29,12 @@ class RideBloc extends Bloc<RideEvent, RideState> {
     required CancelRide cancelRide,
     required StartRide startRide,
     required CompleteRide completeRide,
+    required LeaveRide leaveRide,
     required RideMainBloc rideMainBloc,
     required YourRideListCubit yourRideListCubit,
   })  : _fetchRideById = fetchRideById,
         _cancelRide = cancelRide,
+        _leaveRide = leaveRide,
         _startRide = startRide,
         _completeRide = completeRide,
         _rideMainBloc = rideMainBloc,
@@ -42,6 +46,7 @@ class RideBloc extends Bloc<RideEvent, RideState> {
     on<CancelRideEvent>(_onCancelRide);
     on<StartRideEvent>(_onStartSelectedRide);
     on<CompleteRideEvent>(_onCompleteSelectedRide);
+    on<LeaveRideEvent>(_onLeaveSelectedRide);
     on<ResetRideStateEvent>(_onResetRideBloc);
     on<UpdateSelectedRide>(_onUpdateSelectedRide);
     on<UpdateRideRequireSeatsEvent>(_onUpdateRideRequireSeatsEvent);
@@ -144,6 +149,23 @@ class RideBloc extends Bloc<RideEvent, RideState> {
       emit(RideFailure(failure.message));
       emit(currentState);
     }, (ride) {
+      emit(currentState.copyWith(ride: ride));
+    });
+  }
+
+  Future<void> _onLeaveSelectedRide(
+      LeaveRideEvent event, Emitter<RideState> emit) async {
+    if (state is! RideSelected) return;
+
+    final currentState = state as RideSelected;
+
+    final ride = await _leaveRide(LeaveRideParams(rideId: event.rideId));
+
+    ride.fold((failure) {
+      emit(RideFailure(failure.message));
+      emit(currentState);
+    }, (ride) {
+      emit(const RideActionSuccess("Leave ride successfully"));
       emit(currentState.copyWith(ride: ride));
     });
   }

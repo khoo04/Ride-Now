@@ -47,7 +47,10 @@ abstract interface class RideRepository {
 
   Future<Either<Failure, Ride>> completeRide({required int rideId});
 
-  Future<Either<Failure, bool>> rateRide({required int rideId, required double rating});
+  Future<Either<Failure, bool>> rateRide(
+      {required int rideId, required double rating});
+
+  Future<Either<Failure, Ride>> leaveRide({required int rideId});
 
   ///External API Call (Google Maps / Open Street Maps)
   Future<Either<Failure, List<AutoCompletePrediction>?>>

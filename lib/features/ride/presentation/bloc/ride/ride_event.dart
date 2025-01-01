@@ -57,3 +57,8 @@ class RateRideEvent extends RideEvent {
     required this.rating,
   });
 }
+
+class LeaveRideEvent extends RideEvent {
+  final int rideId;
+  LeaveRideEvent({required this.rideId});
+}
