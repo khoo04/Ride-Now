@@ -20,6 +20,8 @@ class RidePreviewCard extends StatelessWidget {
       case "completed":
         priceColor = Colors.green;
         break;
+      case "canceled":
+        priceColor = AppPallete.errorColor;
       case "confirmed":
       default:
         priceColor = Colors.blue;

@@ -317,6 +317,11 @@ void _initProfile() {
         serviceLocator<ProfileRepository>(),
       ),
     )
+    ..registerFactory(
+      () => GetUserBalance(
+        serviceLocator<ProfileRepository>(),
+      ),
+    )
     ..registerLazySingleton(
       () => VoucherBloc(
         getUserVouchers: serviceLocator<GetUserVouchers>(),
@@ -328,6 +333,11 @@ void _initProfile() {
         createVehicle: serviceLocator<CreateVehicle>(),
         updateVehicle: serviceLocator<UpdateVehicle>(),
         deleteVehicle: serviceLocator<DeleteVehicle>(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => BalanceCubit(
+        getUserBalance: serviceLocator<GetUserBalance>(),
       ),
     )
     ..registerLazySingleton(

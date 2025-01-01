@@ -100,6 +100,10 @@ class ApiRoutes {
   /// Method: GET
   static const vouchers = "$profile/vouchers";
 
+    ///Route to get users balance
+  /// Method: GET
+  static const balance = "$profile/balance";
+
   ///Route to update user profile
   ///Method: POST
   static const updateProfile = "$profile/update";

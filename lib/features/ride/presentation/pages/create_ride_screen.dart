@@ -168,7 +168,7 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                               validator: (fromLocation) {
                                 if (fromLocation == null ||
                                     fromLocation == "") {
-                                  return "Origin location cannot be empty";
+                                  return "Origin location is required";
                                 }
                                 return null;
                               },
@@ -195,6 +195,12 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                                       "locationType": "to",
                                       "action": "create",
                                     });
+                              },
+                              validator: (toLocation) {
+                                if (toLocation == null || toLocation == "") {
+                                  return "Destination location is required";
+                                }
+                                return null;
                               },
                             ),
                             const SizedBox(
@@ -231,7 +237,7 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                               validator: (departureDateTime) {
                                 if (departureDateTime == null ||
                                     departureDateTime == "") {
-                                  return "Departure time cannot be empty";
+                                  return "Departure time is required";
                                 } else if (selectedDepartureTime!
                                     .isBefore(DateTime.now())) {
                                   return "Departure time cannot be before current date and time";
@@ -305,7 +311,7 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                               controller: baseCostController,
                               validator: (baseCost) {
                                 if (baseCost == null || baseCost.isEmpty) {
-                                  return "Base cost cannot be empty";
+                                  return "Base cost is required";
                                 }
                                 return null;
                               },

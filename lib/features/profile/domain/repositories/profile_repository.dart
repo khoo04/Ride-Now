@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:fpdart/fpdart.dart';
 import 'package:ride_now_app/core/common/entities/user.dart';
 import 'package:ride_now_app/core/error/failure.dart';
+import 'package:ride_now_app/features/profile/domain/entities/balance_data.dart';
 import 'package:ride_now_app/features/profile/domain/entities/voucher.dart';
 import 'package:ride_now_app/features/ride/domain/entities/vehicle.dart';
 
@@ -40,4 +41,6 @@ abstract interface class ProfileRepository {
     String? newPassword,
     File? profileImage,
   });
+
+  Future<Either<Failure, BalanceData>> getUserBalance();
 }

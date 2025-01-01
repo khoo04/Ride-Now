@@ -169,11 +169,28 @@ class _RideRatingsScreenState extends State<RideRatingsScreen> {
                           ),
                           Row(
                             children: [
-                              CircleAvatar(
-                                radius: 24,
-                                backgroundColor: Colors.grey[300],
-                                child: const Icon(Icons.person,
-                                    color: Colors.white),
+                              Builder(
+                                builder: (context) {
+                                  ImageProvider<Object>? imageToDisplay;
+                                  final url = state.ride.driver.profilePicture;
+
+                                  if (url != null) {
+                                    imageToDisplay = NetworkImage(url);
+                                  } else {
+                                    imageToDisplay = null;
+                                  }
+                                  return CircleAvatar(
+                                    backgroundColor: Colors.grey[300],
+                                    radius: 24,
+                                    foregroundImage: imageToDisplay,
+                                    child: imageToDisplay == null
+                                        ? const Icon(
+                                            Icons.person,
+                                            color: Colors.white,
+                                          )
+                                        : null,
+                                  );
+                                },
                               ),
                               const SizedBox(width: 16),
                               Text(

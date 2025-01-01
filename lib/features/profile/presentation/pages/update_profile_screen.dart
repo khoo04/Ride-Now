@@ -15,7 +15,7 @@ import 'package:ride_now_app/core/utils/show_snackbar.dart';
 import 'package:ride_now_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:ride_now_app/features/auth/presentation/widgets/auth_input_field.dart';
 import 'package:ride_now_app/features/auth/presentation/widgets/auth_password_field.dart';
-import 'package:ride_now_app/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:ride_now_app/features/profile/presentation/cubit/profile/profile_cubit.dart';
 import 'package:ride_now_app/init_dependencies.dart';
 
 class UpdateProfileScreen extends StatefulWidget {

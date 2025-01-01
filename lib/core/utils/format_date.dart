@@ -11,3 +11,9 @@ String formatDateWithWeekDay(DateTime dateTime) {
       DateFormat('EEEE, dd/MM/yyyy'); // Format as "Weekday, day/month/year"
   return formatter.format(dateTime);
 }
+
+String formatDateWithMonth(DateTime dateTime) {
+  final DateFormat formatter =
+      DateFormat('MMMM yyyy'); // Format as "Month Year"
+  return formatter.format(dateTime);
+}

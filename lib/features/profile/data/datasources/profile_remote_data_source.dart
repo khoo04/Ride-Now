@@ -8,7 +8,9 @@ import 'package:ride_now_app/core/error/exception.dart';
 import 'package:ride_now_app/core/network/app_response.dart';
 import 'package:ride_now_app/core/network/network_client.dart';
 import 'package:ride_now_app/features/auth/data/models/user_model.dart';
+import 'package:ride_now_app/features/profile/data/models/balance_data_model.dart';
 import 'package:ride_now_app/features/profile/data/models/voucher_model.dart';
+import 'package:ride_now_app/features/profile/domain/entities/balance_data.dart';
 import 'package:ride_now_app/features/ride/data/models/vehicle_model.dart';
 
 abstract interface class ProfileRemoteDataSource {
@@ -36,13 +38,16 @@ abstract interface class ProfileRemoteDataSource {
 
   Future<List<VoucherModel>> getUserVouchers();
 
-  Future<UserModel> updateUserProfile(
-      {String? name,
-      String? phone,
-      String? email,
-      String? oldPassword,
-      String? newPassword,
-      File? profileImage});
+  Future<UserModel> updateUserProfile({
+    String? name,
+    String? phone,
+    String? email,
+    String? oldPassword,
+    String? newPassword,
+    File? profileImage,
+  });
+
+  Future<BalanceDataModel> getUserBalance();
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
@@ -331,6 +336,36 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
       throw ServerException(e.message!);
     } on ServerValidatorException {
       rethrow;
+    } on ServerException {
+      rethrow;
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<BalanceDataModel> getUserBalance() async {
+    final token = await _flutterSecureStorage.read(key: "access_token");
+
+    try {
+      final response = await _networkClient.invoke(
+        ApiRoutes.balance,
+        RequestType.get,
+        headers: {"Authorization": "Bearer $token"},
+      );
+
+      final appResponse = AppResponse.fromJson(response.data);
+
+      if (response.statusCode == 200) {
+        return BalanceDataModel.fromJson(appResponse.data);
+      } else {
+        throw ServerException(appResponse.message);
+      }
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout) {
+        throw const ServerException(Constants.connectionTimeout);
+      }
+      throw ServerException(e.message!);
     } on ServerException {
       rethrow;
     } catch (e) {

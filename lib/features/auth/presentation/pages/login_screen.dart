@@ -120,15 +120,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Forgot Password?",
-                      style: TextStyle(
-                        color: Color.fromRGBO(0, 130, 205, 1),
-                      ),
-                    ),
-                  ),
+                  //TODO: Forgot Passowrd
+                  // const Align(
+                  //   alignment: Alignment.centerLeft,
+                  //   child: Text(
+                  //     "Forgot Password?",
+                  //     style: TextStyle(
+                  //       color: Color.fromRGBO(0, 130, 205, 1),
+                  //     ),
+                  //   ),
+                  // ),
                   const Spacer(),
                   BlocBuilder<AuthBloc, AuthState>(
                     builder: (context, state) {

@@ -4,6 +4,7 @@ import 'package:ride_now_app/core/cubits/app_user/app_user_cubit.dart';
 import 'package:ride_now_app/core/theme/app_pallete.dart';
 import 'package:ride_now_app/core/utils/format_phone_number.dart';
 import 'package:ride_now_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:ride_now_app/features/profile/presentation/pages/balance/my_balance_screen.dart';
 import 'package:ride_now_app/features/profile/presentation/pages/manage_vehicles_screen.dart';
 import 'package:ride_now_app/features/profile/presentation/pages/my_voucher_screen.dart';
 import 'package:ride_now_app/features/profile/presentation/pages/update_profile_screen.dart';
@@ -31,12 +32,6 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(
                     height: 20,
                   ),
-                  //TODO: User Profile Picture
-                  // const CircleAvatar(
-                  //   radius: 45,
-                  //   backgroundImage:
-                  //       AssetImage("assets/images/profile_placeholder.png"),
-                  // ),
                   Builder(
                     builder: (context) {
                       final url = state is AppUserLoggedIn
@@ -97,6 +92,17 @@ class ProfileScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 25),
                     child: ProfileActionTile(
+                      icon: Icons.account_balance_wallet,
+                      onTap: () {
+                        Navigator.of(context)
+                            .pushNamed(MyBalanceScreen.routeName);
+                      },
+                      title: "My Balance",
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 25),
+                    child: ProfileActionTile(
                       icon: Icons.redeem,
                       onTap: () {
                         Navigator.of(context)
@@ -105,26 +111,14 @@ class ProfileScreen extends StatelessWidget {
                       title: "My Voucher",
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 25),
-                    child: ProfileActionTile(
-                      icon: Icons.directions_car,
-                      onTap: () {
-                        Navigator.of(context)
-                            .pushNamed(ManageVehiclesScreen.routeName);
-                      },
-                      title: "Manage Vehicles",
-                    ),
+                  ProfileActionTile(
+                    icon: Icons.directions_car,
+                    onTap: () {
+                      Navigator.of(context)
+                          .pushNamed(ManageVehiclesScreen.routeName);
+                    },
+                    title: "Manage Vehicles",
                   ),
-                  // Padding(
-                  //   padding: const EdgeInsets.only(bottom: 25),
-                  //   child: ProfileActionTile(
-                  //     icon: Icons.settings,
-                  //     onTap: () {},
-                  //     title: "Settings",
-                  //   ),
-                  // ),
-
                   const Spacer(flex: 2),
                 ],
               );

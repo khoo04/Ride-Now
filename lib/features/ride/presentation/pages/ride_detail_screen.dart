@@ -326,27 +326,29 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                   )
                 ],
               ),
-              Builder(builder: (context) {
-                ImageProvider<Object>? imageToDisplay;
-                final url = state.ride.driver.profilePicture;
+              Builder(
+                builder: (context) {
+                  ImageProvider<Object>? imageToDisplay;
+                  final url = state.ride.driver.profilePicture;
 
-                if (url != null) {
-                  imageToDisplay = NetworkImage(url);
-                } else {
-                  imageToDisplay = null;
-                }
-                return CircleAvatar(
-                  backgroundColor: Colors.grey[300],
-                  radius: 24,
-                  foregroundImage: imageToDisplay,
-                  child: imageToDisplay == null
-                      ? const Icon(
-                          Icons.person,
-                          color: Colors.white,
-                        )
-                      : null,
-                );
-              }),
+                  if (url != null) {
+                    imageToDisplay = NetworkImage(url);
+                  } else {
+                    imageToDisplay = null;
+                  }
+                  return CircleAvatar(
+                    backgroundColor: Colors.grey[300],
+                    radius: 24,
+                    foregroundImage: imageToDisplay,
+                    child: imageToDisplay == null
+                        ? const Icon(
+                            Icons.person,
+                            color: Colors.white,
+                          )
+                        : null,
+                  );
+                },
+              ),
             ],
           ),
         ),
@@ -791,11 +793,27 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                   )
                 ],
               ),
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: Colors.grey[300],
-                child: const Icon(Icons.person, color: Colors.white),
-              ),
+              Builder(builder: (context) {
+                ImageProvider<Object>? imageToDisplay;
+                final url = state.ride.driver.profilePicture;
+
+                if (url != null) {
+                  imageToDisplay = NetworkImage(url);
+                } else {
+                  imageToDisplay = null;
+                }
+                return CircleAvatar(
+                  backgroundColor: Colors.grey[300],
+                  radius: 24,
+                  foregroundImage: imageToDisplay,
+                  child: imageToDisplay == null
+                      ? const Icon(
+                          Icons.person,
+                          color: Colors.white,
+                        )
+                      : null,
+                );
+              }),
             ],
           ),
         ),
@@ -864,7 +882,9 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
               }
               return null;
             }, builder: (context, user) {
-              if (user == null || state.ride.status == "completed") {
+              if (user == null ||
+                  state.ride.status == "completed" ||
+                  state.ride.status == "canceled") {
                 return const SizedBox.shrink();
               }
               //TODO: Leave ride?

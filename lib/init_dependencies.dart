@@ -27,13 +27,15 @@ import 'package:ride_now_app/features/profile/data/repositories/profile_reposito
 import 'package:ride_now_app/features/profile/domain/repositories/profile_repository.dart';
 import 'package:ride_now_app/features/profile/domain/usecases/create_vehicle.dart';
 import 'package:ride_now_app/features/profile/domain/usecases/delete_vehicle.dart';
+import 'package:ride_now_app/features/profile/domain/usecases/get_user_balance.dart';
 import 'package:ride_now_app/features/profile/domain/usecases/get_user_vehicles.dart';
 import 'package:ride_now_app/features/profile/domain/usecases/get_user_vouchers.dart';
 import 'package:ride_now_app/features/profile/domain/usecases/update_user_profile.dart';
 import 'package:ride_now_app/features/profile/domain/usecases/update_vehicle.dart';
 import 'package:ride_now_app/features/profile/presentation/bloc/vehicle/vehicle_bloc.dart';
 import 'package:ride_now_app/features/profile/presentation/bloc/voucher/voucher_bloc.dart';
-import 'package:ride_now_app/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:ride_now_app/features/profile/presentation/cubit/balance/balance_cubit.dart';
+import 'package:ride_now_app/features/profile/presentation/cubit/profile/profile_cubit.dart';
 import 'package:ride_now_app/features/ride/data/datasources/ride_remote_data_source.dart';
 import 'package:ride_now_app/features/ride/data/repositories/ride_repository_impl.dart';
 import 'package:ride_now_app/features/ride/domain/repositories/ride_repository.dart';

@@ -7,6 +7,7 @@ import 'package:ride_now_app/core/error/exception.dart';
 import 'package:ride_now_app/core/error/failure.dart';
 import 'package:ride_now_app/core/network/connection_checker.dart';
 import 'package:ride_now_app/features/profile/data/datasources/profile_remote_data_source.dart';
+import 'package:ride_now_app/features/profile/domain/entities/balance_data.dart';
 import 'package:ride_now_app/features/profile/domain/entities/voucher.dart';
 import 'package:ride_now_app/features/profile/domain/repositories/profile_repository.dart';
 import 'package:ride_now_app/features/ride/domain/entities/vehicle.dart';
@@ -146,6 +147,20 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return right(updatedUser);
     } on ServerValidatorException catch (e) {
       return left(Failure(e.message, e.errors));
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, BalanceData>> getUserBalance() async {
+    try {
+      if (!await (_connectionChecker.isConnected)) {
+        return left(Failure(Constants.noConnectionErrorMessage));
+      }
+      final balanceData = await _profileRemoteDataSource.getUserBalance();
+
+      return right(balanceData);
     } on ServerException catch (e) {
       return left(Failure(e.message));
     }

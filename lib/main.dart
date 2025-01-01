@@ -14,7 +14,9 @@ import 'package:ride_now_app/features/payment/presentation/pages/payment_result_
 import 'package:ride_now_app/features/payment/presentation/pages/payment_web_screen.dart';
 import 'package:ride_now_app/features/profile/presentation/bloc/vehicle/vehicle_bloc.dart';
 import 'package:ride_now_app/features/profile/presentation/bloc/voucher/voucher_bloc.dart';
-import 'package:ride_now_app/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:ride_now_app/features/profile/presentation/cubit/balance/balance_cubit.dart';
+import 'package:ride_now_app/features/profile/presentation/cubit/profile/profile_cubit.dart';
+import 'package:ride_now_app/features/profile/presentation/pages/balance/my_balance_screen.dart';
 import 'package:ride_now_app/features/profile/presentation/pages/manage_vehicles_screen.dart';
 import 'package:ride_now_app/features/profile/presentation/pages/my_voucher_screen.dart';
 import 'package:ride_now_app/features/profile/presentation/pages/register_vehicle_screen.dart';
@@ -83,6 +85,9 @@ void main() async {
     BlocProvider(
       create: (_) => serviceLocator<ProfileCubit>(),
     ),
+    BlocProvider(
+      create: (_) => serviceLocator<BalanceCubit>(),
+    ),
   ], child: const MyApp()));
 }
 
@@ -146,6 +151,7 @@ class _MyAppState extends State<MyApp> {
             const VehicleActionSuccessScreen(),
         MyVoucherScreen.routeName: (context) => const MyVoucherScreen(),
         UpdateProfileScreen.routeName: (context) => const UpdateProfileScreen(),
+        MyBalanceScreen.routeName: (context) => const MyBalanceScreen(),
         //Ride
         CreateRideSuccessScreen.routeName: (context) =>
             const CreateRideSuccessScreen(),
