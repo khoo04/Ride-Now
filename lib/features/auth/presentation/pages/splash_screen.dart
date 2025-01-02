@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ride_now_app/core/common/widgets/app_button.dart';
@@ -27,13 +28,14 @@ class SplashScreen extends StatelessWidget {
               const Spacer(),
               Image.asset("assets/images/ride_now_logo.png"),
               const Spacer(),
-              const Text(
+              const AutoSizeText(
                 "Shared Rides, United Journeys.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 23,
                 ),
+                maxLines: 1,
               ),
               const SizedBox(
                 height: 38,
