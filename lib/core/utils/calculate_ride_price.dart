@@ -24,8 +24,10 @@ double calculateRidePrice({
     subtotal = (subtotal - voucherAmount).clamp(0, double.infinity);
   }
   double amountShouldPay;
-  // Step 4: Apply platform charge (5%)
-  final double platformCharge = roundToNearestFiveCents(subtotal * 0.05);
+  //TODO: Platform Charge as the parameters for this function
+
+  // Step 4: Apply platform charge (1%)
+  final double platformCharge = roundToNearestFiveCents(subtotal * 0.01);
 
   amountShouldPay = subtotal + platformCharge;
 

@@ -1183,7 +1183,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
             }
 
             final double platformCharge =
-                roundToNearestFiveCents(subtotal * 0.05);
+                roundToNearestFiveCents(subtotal * 0.01);
 
             const double bankServiceCharge = 0.70;
 
@@ -1275,8 +1275,9 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    //TODO: Change platform charges dynamically, read from database table
                     const Text(
-                      "Platform charges (5%)",
+                      "Platform charges (1%)",
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,

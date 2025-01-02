@@ -11,6 +11,8 @@ class PaymentResultScreen extends StatelessWidget {
   static const routeName = 'payment/result';
   const PaymentResultScreen({super.key});
 
+  //TODO: Peridoic Check Payment Result if after 5 seconds is still loading, since real time update maybe not working properly when the connection is unstable
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
