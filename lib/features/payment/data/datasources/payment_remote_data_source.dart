@@ -46,6 +46,8 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
         throw const ServerException(Constants.connectionTimeout);
       }
       throw ServerException(e.message!);
+    } on ServerException {
+      rethrow;
     } catch (e) {
       throw ServerException(e.toString());
     }

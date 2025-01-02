@@ -560,7 +560,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                     Navigator.pushNamed(
                         context, InAppNavigationScreen.routeName);
                   },
-                  child: const Text(
+                  child: const AutoSizeText(
                     "View Route",
                     textAlign: TextAlign.center,
                   ),
@@ -884,7 +884,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                   state.ride.status == "canceled") {
                 return const SizedBox.shrink();
               }
-              //TODO: Leave ride?
+
               final isBefore5Minutes = DateTime.now().isBefore(state
                   .ride.departureTime
                   .subtract(const Duration(minutes: 5)));
@@ -900,7 +900,10 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                             Navigator.of(context)
                                 .pushNamed(InAppNavigationScreen.routeName);
                           },
-                          child: const Text("View ride details"),
+                          child: const AutoSizeText(
+                            "View ride details",
+                            maxLines: 1,
+                          ),
                         ),
                       ),
                       const SizedBox(
@@ -970,7 +973,10 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                       Navigator.of(context)
                           .pushNamed(InAppNavigationScreen.routeName);
                     },
-                    child: const Text("View ride details"),
+                    child: const AutoSizeText(
+                      "View ride details",
+                      maxLines: 1,
+                    ),
                   );
                 }
               } else {
@@ -1114,6 +1120,8 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                                                           );
                                                         } else if (paymentState
                                                             is PaymentInitFailed) {
+                                                          Navigator.of(context)
+                                                              .pop();
                                                           showSnackBar(
                                                             context,
                                                             paymentState
@@ -1123,8 +1131,10 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                                                       }
                                                     });
                                                   },
-                                                  child:
-                                                      const Text("Join ride")),
+                                                  child: const AutoSizeText(
+                                                    "Join ride",
+                                                    maxLines: 1,
+                                                  )),
                                             ),
                                           ],
                                         ),

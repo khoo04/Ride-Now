@@ -214,7 +214,6 @@ class _InAppNavigationScreenState extends State<InAppNavigationScreen> {
                       builder: (context, currentPosition, _) {
                         return GoogleMap(
                           onMapCreated: (GoogleMapController controller) {
-                            //FIXME: Rebuild after state changed
                             _controller.complete(controller);
                           },
                           initialCameraPosition: CameraPosition(
@@ -503,11 +502,17 @@ class _InAppNavigationScreenState extends State<InAppNavigationScreen> {
                           child: Builder(builder: (context) {
                             final status = ride.status;
                             if (status == "confirmed") {
-                              //TODO: Start Ride should be available before 5 minutes of the departure time
-                              if (false) {
-                                return const AppButton(
-                                  onPressed: null,
-                                  child: Text("Start Ride"),
+                              if (DateTime.now().isBefore(ride.departureTime
+                                  .add(const Duration(minutes: -5)))) {
+                                return Tooltip(
+                                  message:
+                                      'Please wait at least \n${formatDate(ride.departureTime.add(const Duration(minutes: -5)))} ${formatTime(ride.departureTime.add(const Duration(minutes: -5)))} to start ride',
+                                  triggerMode: TooltipTriggerMode.tap,
+                                  textAlign: TextAlign.center,
+                                  child: const AppButton(
+                                    onPressed: null,
+                                    child: Text("Start Ride"),
+                                  ),
                                 );
                               } else {
                                 return AppButton(
