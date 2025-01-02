@@ -502,7 +502,18 @@ class _InAppNavigationScreenState extends State<InAppNavigationScreen> {
                           child: Builder(builder: (context) {
                             final status = ride.status;
                             if (status == "confirmed") {
-                              if (DateTime.now().isBefore(ride.departureTime
+                              if (ride.passengers.isEmpty) {
+                                return const Tooltip(
+                                  message: 'No passengers to start the ride',
+                                  triggerMode: TooltipTriggerMode.tap,
+                                  textAlign: TextAlign.center,
+                                  child: AppButton(
+                                    onPressed: null,
+                                    child: Text("Start Ride"),
+                                  ),
+                                );
+                              } else if (DateTime.now().isBefore(ride
+                                  .departureTime
                                   .add(const Duration(minutes: -5)))) {
                                 return Tooltip(
                                   message:
