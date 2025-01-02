@@ -9,6 +9,7 @@ import 'package:ride_now_app/core/cubits/app_user/app_user_cubit.dart';
 import 'package:ride_now_app/core/network/connection_checker.dart';
 import 'package:ride_now_app/core/network/network_client.dart';
 import 'package:ride_now_app/core/utils/image_helper.dart';
+import 'package:ride_now_app/core/utils/logger.dart';
 import 'package:ride_now_app/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:ride_now_app/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:ride_now_app/features/auth/domain/repositories/auth_repository.dart';

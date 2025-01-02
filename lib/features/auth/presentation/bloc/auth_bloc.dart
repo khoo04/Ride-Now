@@ -130,6 +130,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final flutterSecureStorage = serviceLocator<FlutterSecureStorage>();
     await flutterSecureStorage.write(key: "isRemember", value: null);
     await flutterSecureStorage.delete(key: "access_token");
+
     emit(const AuthFailure(Constants.sessionExpired));
     emit(AuthInitial());
     _appUserCubit.updateUser(null);

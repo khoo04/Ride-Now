@@ -40,11 +40,12 @@ void _initUtils() {
     InterceptorsWrapper(
       onResponse: (response, handler) {
         if (response.statusCode == 401 &&
-            response.data["message"] == "Unauthenticted") {
+            response.data["message"] == "Unauthenticated.") {
           // Perform logout logic
           serviceLocator<AuthBloc>().add(AuthUserSessionExpired());
+        } else {
+          return handler.next(response); // Continue with the response
         }
-        return handler.next(response); // Continue with the response
       },
     ),
   );
