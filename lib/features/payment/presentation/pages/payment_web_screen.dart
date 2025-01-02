@@ -60,7 +60,7 @@ Page resource error:
           },
           onUrlChange: (UrlChange change) {
             if (change.url ==
-                "https://khoodev.us.kg/api/RideNowV1/payment/callback") {
+                "https://khoodev.blog/api/RideNowV1/payment/callback") {
               Navigator.of(context)
                   .popAndPushNamed(PaymentResultScreen.routeName);
             }
