@@ -460,6 +460,7 @@ class _InAppNavigationScreenState extends State<InAppNavigationScreen> {
                                             break;
                                           case "completed":
                                             message = "Ride completed";
+                                            break;
                                           default:
                                             message =
                                                 "Please wait your passengers in origin";
