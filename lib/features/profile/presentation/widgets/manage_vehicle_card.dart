@@ -15,7 +15,7 @@ class ManageVehicleCard extends StatelessWidget {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(.5),
+            color: Colors.grey.withValues(alpha: 0.5),
             blurRadius: 4.0, // soften the shadow
             spreadRadius: -4.0, //extend the shadow
           ),
