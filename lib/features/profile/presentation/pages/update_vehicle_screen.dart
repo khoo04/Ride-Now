@@ -23,6 +23,7 @@ class UpdateVehicleScreen extends StatefulWidget {
 }
 
 class _UpdateVehicleScreenState extends State<UpdateVehicleScreen> {
+  late final _vehicleBloc;
   final _updateVehicleFormKey = GlobalKey<FormState>();
   final _carManufacturerController = TextEditingController();
   final _carModelController = TextEditingController();
@@ -43,9 +44,21 @@ class _UpdateVehicleScreenState extends State<UpdateVehicleScreen> {
   String? _fuelConsumptionError;
 
   @override
-  Widget build(BuildContext context) {
-    final vehicleBloc = context.read<VehicleBloc>();
+  void initState() {
+    _vehicleBloc = context.read<VehicleBloc>();
+    super.initState();
+  }
 
+  @override
+  void dispose() {
+    if (_vehicleBloc.state is VehicleRegisterFailure) {
+      _vehicleBloc.add(FetchUserVehicles());
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final vehicleToUpdate =
         ModalRoute.of(context)!.settings.arguments as Vehicle;
 
@@ -94,7 +107,7 @@ class _UpdateVehicleScreenState extends State<UpdateVehicleScreen> {
                             arguments: "update")
                         .then((_) {
                       // This block is executed when the screen popped back
-                      vehicleBloc.add(FetchUserVehicles());
+                      _vehicleBloc.add(FetchUserVehicles());
                     });
                   }
                 },

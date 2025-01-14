@@ -100,7 +100,16 @@ class _ManageVehiclesScreenState extends State<ManageVehiclesScreen> {
         ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
-            Navigator.of(context).pushNamed(RegisterVehicleScreen.routeName);
+            Navigator.of(context)
+                .pushNamed(RegisterVehicleScreen.routeName)
+                .then((value) {
+              if (context.mounted) {
+                if (context.read<VehicleBloc>().state
+                    is VehicleRegisterFailure) {
+                  context.read<VehicleBloc>().add(FetchUserVehicles());
+                }
+              }
+            });
           },
           label: const Text("New Vehicles"),
           icon: const Icon(Icons.add),

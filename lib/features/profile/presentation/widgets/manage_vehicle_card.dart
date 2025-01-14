@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ride_now_app/core/theme/app_pallete.dart';
+import 'package:ride_now_app/core/utils/logger.dart';
 import 'package:ride_now_app/features/profile/presentation/bloc/vehicle/vehicle_bloc.dart';
 import 'package:ride_now_app/features/profile/presentation/pages/update_vehicle_screen.dart';
 import 'package:ride_now_app/features/ride/domain/entities/vehicle.dart';
@@ -15,7 +16,7 @@ class ManageVehicleCard extends StatelessWidget {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(.5),
+            color: Colors.grey.withValues(alpha: 0.5),
             blurRadius: 4.0, // soften the shadow
             spreadRadius: -4.0, //extend the shadow
           ),
