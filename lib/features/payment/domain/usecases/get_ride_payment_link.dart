@@ -12,6 +12,7 @@ class GetRidePaymentLink implements Usecase<String, GetRidePaymentLinkParams> {
       rideId: params.rideId,
       paymentAmount: params.paymentAmount,
       requiredSeats: params.requiredSeats,
+      voucherId: params.voucherId,
     );
   }
 }
@@ -20,10 +21,12 @@ class GetRidePaymentLinkParams {
   final int rideId;
   final double paymentAmount;
   final int requiredSeats;
+  final String? voucherId;
 
   GetRidePaymentLinkParams({
     required this.rideId,
     required this.paymentAmount,
     required this.requiredSeats,
+    this.voucherId,
   });
 }

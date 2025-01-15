@@ -17,15 +17,18 @@ class PaymentRepositoryImpl implements PaymentRepository {
     required int rideId,
     required double paymentAmount,
     required int requiredSeats,
+    required String? voucherId,
   }) async {
     try {
       if (!await (_connectionChecker.isConnected)) {
         return left(Failure(Constants.noConnectionErrorMessage));
       }
       final paymentLink = await _paymentRemoteDataSource.getRidePaymentLink(
-          rideId: rideId,
-          paymentAmount: paymentAmount,
-          requiredSeats: requiredSeats);
+        rideId: rideId,
+        paymentAmount: paymentAmount,
+        requiredSeats: requiredSeats,
+        voucherId: voucherId,
+      );
 
       return right(paymentLink);
     } on ServerException catch (e) {

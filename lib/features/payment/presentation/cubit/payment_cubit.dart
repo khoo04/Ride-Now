@@ -16,12 +16,14 @@ class PaymentCubit extends Cubit<PaymentState> {
     required int rideId,
     required double paymentAmount,
     required int requiredSeats,
+    required String? voucherId,
   }) async {
     final res = await _getRidePaymentLink(
       GetRidePaymentLinkParams(
         rideId: rideId,
         paymentAmount: paymentAmount,
         requiredSeats: requiredSeats,
+        voucherId: voucherId,
       ),
     );
 
