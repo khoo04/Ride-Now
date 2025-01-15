@@ -225,7 +225,7 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
         final appResponse = AppResponse.fromJson(response.data);
         return appResponse.success;
       } else {
-        throw const ServerException("Unable to delete vehicle");
+        throw ServerException(response.data["message"]);
       }
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout) {
