@@ -1081,6 +1081,19 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                                             Center(
                                               child: AppButton(
                                                   onPressed: () {
+                                                    //Read latest state
+                                                    final state = context
+                                                                .read<RideBloc>()
+                                                                .state
+                                                            is RideSelected
+                                                        ? context
+                                                                .read<RideBloc>()
+                                                                .state
+                                                            as RideSelected
+                                                        : null;
+                                                    if (state == null) {
+                                                      return;
+                                                    }
                                                     final paymentAmount =
                                                         calculateRidePrice(
                                                             baseCost: state
@@ -1091,7 +1104,10 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                                                                     .passengers
                                                                     .length,
                                                             requiredSeats:
-                                                                state.seats);
+                                                                state.seats,
+                                                            voucherAmount: state
+                                                                .voucherSelected
+                                                                ?.amount);
                                                     context
                                                         .read<PaymentCubit>()
                                                         .initializePayment(
@@ -1101,6 +1117,9 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                                                               paymentAmount,
                                                           requiredSeats:
                                                               state.seats,
+                                                          voucherId: state
+                                                              .voucherSelected
+                                                              ?.voucherId,
                                                         )
                                                         .then((paymentState) {
                                                       if (context.mounted) {

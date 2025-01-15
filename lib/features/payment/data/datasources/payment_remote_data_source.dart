@@ -11,6 +11,7 @@ abstract interface class PaymentRemoteDataSource {
     required int rideId,
     required double paymentAmount,
     required int requiredSeats,
+    required String? voucherId,
   });
 }
 
@@ -19,20 +20,30 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
   final FlutterSecureStorage _flutterSecureStorage;
   PaymentRemoteDataSourceImpl(this._networkClient, this._flutterSecureStorage);
   @override
-  Future<String> getRidePaymentLink(
-      {required int rideId,
-      required double paymentAmount,
-      required int requiredSeats}) async {
+  Future<String> getRidePaymentLink({
+    required int rideId,
+    required double paymentAmount,
+    required int requiredSeats,
+    required String? voucherId,
+  }) async {
     final token = await _flutterSecureStorage.read(key: "access_token");
 
     try {
-      final response = await _networkClient
-          .invoke("${ApiRoutes.joinRide}/$rideId", RequestType.post, headers: {
-        "Authorization": "Bearer $token"
-      }, requestBody: {
+      Map<String, dynamic> body = {};
+      body.addAll({
         "payment_amount": paymentAmount,
         "required_seats": requiredSeats,
       });
+
+      if (voucherId != null) {
+        body.addAll({"voucher_id": voucherId});
+      }
+      final response = await _networkClient.invoke(
+        "${ApiRoutes.joinRide}/$rideId",
+        RequestType.post,
+        headers: {"Authorization": "Bearer $token"},
+        requestBody: body,
+      );
 
       final appResponse = AppResponse.fromJson(response.data);
 
