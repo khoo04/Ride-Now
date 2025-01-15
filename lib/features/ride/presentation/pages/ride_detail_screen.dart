@@ -8,6 +8,7 @@ import 'package:ride_now_app/core/common/widgets/cancel_button.dart';
 import 'package:ride_now_app/core/common/widgets/custom_sweet_alert_dialog.dart';
 import 'package:ride_now_app/core/common/widgets/my_app_bar.dart';
 import 'package:ride_now_app/core/common/widgets/navigate_back_button.dart';
+import 'package:ride_now_app/core/common/widgets/overflow_aware_text.dart';
 import 'package:ride_now_app/core/cubits/app_user/app_user_cubit.dart';
 import 'package:ride_now_app/core/theme/app_pallete.dart';
 import 'package:ride_now_app/core/utils/calculate_ride_price.dart';
@@ -203,21 +204,19 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              state.ride.origin.name,
+                            OverflowAwareText(
+                              text: state.ride.origin.name,
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold),
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
-                            Text(
-                              state.ride.origin.formattedAddress,
+                            OverflowAwareText(
+                              text: state.ride.origin.formattedAddress,
                               style: const TextStyle(
                                 fontWeight: FontWeight.w400,
                                 fontSize: 12,
                               ),
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
                             Builder(builder: (context) {
                               if (state.ride.vehicle.seats > 8) {
@@ -263,21 +262,19 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                                   state.ride.vehicle.seats);
                             }),
                             const Spacer(),
-                            Text(
-                              state.ride.destination.name,
+                            OverflowAwareText(
+                              text: state.ride.destination.name,
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold),
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
-                            Text(
-                              state.ride.destination.formattedAddress,
+                            OverflowAwareText(
+                              text: state.ride.destination.formattedAddress,
                               style: const TextStyle(
                                 fontWeight: FontWeight.w400,
                                 fontSize: 12,
                               ),
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),
@@ -669,21 +666,19 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              state.ride.origin.name,
+                            OverflowAwareText(
+                              text: state.ride.origin.name,
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold),
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
-                            Text(
-                              state.ride.origin.formattedAddress,
+                            OverflowAwareText(
+                              text: state.ride.origin.formattedAddress,
                               style: const TextStyle(
                                 fontWeight: FontWeight.w400,
                                 fontSize: 12,
                               ),
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
                             Builder(builder: (context) {
                               if (state.ride.vehicle.seats > 8) {
@@ -729,21 +724,19 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                                   state.ride.vehicle.seats);
                             }),
                             const Spacer(),
-                            Text(
-                              state.ride.destination.name,
+                            OverflowAwareText(
+                              text: state.ride.destination.name,
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold),
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
-                            Text(
-                              state.ride.destination.formattedAddress,
+                            OverflowAwareText(
+                              text: state.ride.destination.formattedAddress,
                               style: const TextStyle(
                                 fontWeight: FontWeight.w400,
                                 fontSize: 12,
                               ),
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),
