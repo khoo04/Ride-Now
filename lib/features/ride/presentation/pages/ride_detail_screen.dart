@@ -666,21 +666,19 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              state.ride.origin.name,
+                            OverflowAwareText(
+                              text: state.ride.origin.name,
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold),
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
-                            Text(
-                              state.ride.origin.formattedAddress,
+                            OverflowAwareText(
+                              text: state.ride.origin.formattedAddress,
                               style: const TextStyle(
                                 fontWeight: FontWeight.w400,
                                 fontSize: 12,
                               ),
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
                             Builder(builder: (context) {
                               if (state.ride.vehicle.seats > 8) {
@@ -726,21 +724,19 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                                   state.ride.vehicle.seats);
                             }),
                             const Spacer(),
-                            Text(
-                              state.ride.destination.name,
+                            OverflowAwareText(
+                              text: state.ride.destination.name,
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold),
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
-                            Text(
-                              state.ride.destination.formattedAddress,
+                            OverflowAwareText(
+                              text: state.ride.destination.formattedAddress,
                               style: const TextStyle(
                                 fontWeight: FontWeight.w400,
                                 fontSize: 12,
                               ),
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),
